@@ -1,41 +1,73 @@
 import { useState } from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import axios from "axios";
 
 const DokumenA = () => {
   const [values, setValues] = useState({
     kode: "",
-    contact: "",
-    subject: "",
-    unggah: null, // Default file
+    unggah: null,
   });
 
+  const [telegramGroup, setTelegramGroup] = useState(""); // Untuk radio Telegram
+  const [phoneNumber, setPhoneNumber] = useState(""); // Nomor telepon jika "tidak"
   const [selectedReason, setSelectedReason] = useState(""); // Untuk alasan retur
-  const [customReason, setCustomReason] = useState(""); // Untuk inputan custom
+  const [customReason, setCustomReason] = useState(""); // Alasan retur lainnya
 
   const handleChanges = (e) => {
-    const { name, value, type, files } = e.target;
+    const { name, type, files, value } = e.target;
 
-    if (name === "subject") {
-      setSelectedReason(value);
-    } else {
-      setValues({
-        ...values,
-        [name]: type === "file" ? (files.length > 0 ? files[0] : null) : value,
-      });
-    }
+    setValues({
+      ...values,
+      [name]: type === "file" ? (files.length > 0 ? files[0] : null) : value,
+    });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({
-      ...values,
-      alasanRetur: selectedReason === "lainnya" ? customReason : selectedReason,
-    });
+
+    // Validasi sederhana
+    if (
+      !values.kode ||
+      !selectedReason ||
+      !values.unggah ||
+      (telegramGroup === "tidak" && !phoneNumber)
+    ) {
+      alert("Harap lengkapi semua data terlebih dahulu.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("kodeSatker", values.kode);
+    formData.append(
+      "noTelpon",
+      telegramGroup === "tidak" ? phoneNumber : "Sudah tergabung Telegram"
+    );
+    formData.append(
+      "alasanRetur",
+      selectedReason === "lainnya" ? customReason : selectedReason
+    );
+    formData.append("unggah_dokumen", values.unggah);
+
+    try {
+      const token = localStorage.getItem("token"); // Pastikan token disimpan saat login
+
+      const response = await axios.post("http://localhost:3000/api/retur/create", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert("Berhasil mengirim retur SP2D!");
+      console.log(response.data);
+    } catch (error) {
+      console.error("Gagal mengirim:", error.response?.data || error.message);
+      alert("Gagal mengirim pengajuan retur!");
+    }
   };
 
   return (
     <div>
-      {/* Header */}
       <header className="header-dokumen">
         <Container fluid>
           <Row className="dokumenheader-box d-flex align-items-center justify-content-center">
@@ -49,7 +81,6 @@ const DokumenA = () => {
       </header>
 
       <Container>
-        {/* Form */}
         <Row className="justify-content-center mt-4">
           <Col md={8} lg={10}>
             <Form onSubmit={handleSubmit} className="formulir">
@@ -68,7 +99,7 @@ const DokumenA = () => {
                 </Col>
               </Form.Group>
 
-              {/* Nomor Telepon */}
+              {/* Nomor Telepon / Telegram */}
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm={4}>Nomor Telepon</Form.Label>
                 <Col sm={8}>
@@ -76,26 +107,25 @@ const DokumenA = () => {
                   <Form.Check
                     type="radio"
                     label="Iya"
-                    name="subject"
+                    name="telegram"
                     value="Iya"
-                    onChange={handleChanges}
-                    checked={selectedReason === "Iya"} // HARUSNYA === "Iya"
+                    onChange={(e) => setTelegramGroup(e.target.value)}
+                    checked={telegramGroup === "Iya"}
                   />
                   <Form.Check
                     type="radio"
                     label="Tidak"
-                    name="subject"
+                    name="telegram"
                     value="tidak"
-                    onChange={handleChanges}
-                    checked={selectedReason === "tidak"}
+                    onChange={(e) => setTelegramGroup(e.target.value)}
+                    checked={telegramGroup === "tidak"}
                   />
-
-                  {selectedReason === "tidak" && (
+                  {telegramGroup === "tidak" && (
                     <Form.Control
                       type="text"
                       placeholder="Masukkan Nomor Telepon Anda"
-                      value={customReason} // customReason belum dideklarasikan
-                      onChange={(e) => setCustomReason(e.target.value)}
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
                       className="mt-2"
                       required
                     />
@@ -110,33 +140,33 @@ const DokumenA = () => {
                   <Form.Check
                     type="radio"
                     label="Rekening Supplier Tidak Aktif / Salah / Tidak Ditemukan"
-                    name="subject"
+                    name="alasanRetur"
                     value="Rekening Supplier Tidak Aktif"
-                    onChange={handleChanges}
+                    onChange={(e) => setSelectedReason(e.target.value)}
                     checked={selectedReason === "Rekening Supplier Tidak Aktif"}
                   />
                   <Form.Check
                     type="radio"
                     label="Rekening Pasif/Tidak Aktif/Diblokir"
-                    name="subject"
+                    name="alasanRetur"
                     value="Rekening Pasif"
-                    onChange={handleChanges}
+                    onChange={(e) => setSelectedReason(e.target.value)}
                     checked={selectedReason === "Rekening Pasif"}
                   />
                   <Form.Check
                     type="radio"
                     label="Nomor Rekening Salah/Tidak Ditemukan"
-                    name="subject"
+                    name="alasanRetur"
                     value="Nomor Rekening Salah"
-                    onChange={handleChanges}
+                    onChange={(e) => setSelectedReason(e.target.value)}
                     checked={selectedReason === "Nomor Rekening Salah"}
                   />
                   <Form.Check
                     type="radio"
                     label="Yang lain:"
-                    name="subject"
+                    name="alasanRetur"
                     value="lainnya"
-                    onChange={handleChanges}
+                    onChange={(e) => setSelectedReason(e.target.value)}
                     checked={selectedReason === "lainnya"}
                   />
                   {selectedReason === "lainnya" && (
@@ -152,7 +182,7 @@ const DokumenA = () => {
                 </Col>
               </Form.Group>
 
-              {/* Unggah Dokumen */}
+              {/* Upload Dokumen */}
               <Form.Group as={Row} className="mb-3">
                 <Form.Label column sm={4}>Unggah Dokumen Persyaratan</Form.Label>
                 <Col sm={8}>

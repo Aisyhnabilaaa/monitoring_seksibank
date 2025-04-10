@@ -1,23 +1,60 @@
+import { useEffect, useState } from "react";
 import { Container, Table } from "react-bootstrap";
 import { BsFillTrashFill } from "react-icons/bs";
-
-import { useState } from "react";
+import axios from "axios";
 
 const MonitoringAdminA = () => {
-  const [statuses, setStatuses] = useState({
-    1: "DIPROSES",
-    2: "DITOLAK",
-    3: "SELESAI"
-  });
+  const [returs, setReturs] = useState([]);
 
-  const handleStatusChange = (id, newStatus) => {
-    setStatuses((prevStatuses) => ({
-      ...prevStatuses,
-      [id]: newStatus,
-    }));
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get("http://localhost:5000/api/retur/admin", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setReturs(response.data);
+      } catch (error) {
+        console.error("Gagal mengambil data retur:", error.response?.data || error.message);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.patch(`http://localhost:5000/api/retur/admin/${id}`, { status: newStatus }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setReturs((prev) =>
+        prev.map((retur) => (retur.id === id ? { ...retur, status: newStatus } : retur))
+      );
+    } catch (error) {
+      console.error("Gagal mengubah status:", error.response?.data || error.message);
+    }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`http://localhost:5000/api/retur/admin/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
+      setReturs((prev) => prev.filter((retur) => retur.id !== id));
+    } catch (error) {
+      console.error("Gagal menghapus:", error.response?.data || error.message);
+    }
+  };
 
   return (
     <Container className="p-5">
@@ -36,26 +73,21 @@ const MonitoringAdminA = () => {
             </tr>
           </thead>
           <tbody>
-            {Object.keys(statuses).map((id) =>(
-              <tr key={id}>
-                <td>{id}</td>
-                <td>Nama Pengguna {id}</td>
-                <td>Alasan {id}</td>
-                <td>file</td>
+            {returs.map((retur) => (
+              <tr key={retur.id}>
+                <td>{retur.kodeSatker}</td>
+                <td>{retur.noTelpon}</td>
+                <td>{retur.alasanRetur}</td>
+                <td><a href={`http://localhost:5000/${retur.unggah_dokumen}`} target="_blank" rel="noreferrer">Lihat</a></td>
                 <td>
-                  <select className="status-dropdown"
-                  value={statuses[id]}
-                  onChange={(e) => handleStatusChange (id, e.target.value)}
-                  >
+                  <select value={retur.status} onChange={(e) => handleStatusChange(retur.id, e.target.value)}>
                     <option value="DIPROSES">DIPROSES</option>
                     <option value="DITOLAK">DITOLAK</option>
                     <option value="SELESAI">SELESAI</option>
                   </select>
                 </td>
                 <td>
-                  <span className="actions">
-                    <BsFillTrashFill className="delete-btn" />
-                  </span>
+                  <BsFillTrashFill className="delete-btn" onClick={() => handleDelete(retur.id)} />
                 </td>
               </tr>
             ))}
