@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -19,10 +21,24 @@ const Login = () => {
       const res = await axios.post('http://localhost:3000/api/auth/login', form);
       const token = res.data.data.token;
       localStorage.setItem('token', token); // Simpan token
-      alert("Login berhasil");
-      navigate("/dashboard"); // arahkan ke dashboard atau halaman utama
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Login Berhasil!',
+        text: 'Selamat Datang Kembali!',
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      setTimeout(() => {
+        navigate("/");
+      }, 2000); // arahkan ke dashboard atau halaman utama
     } catch (err) {
-      alert("Login gagal: " + err.response?.data?.error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Gagal!',
+        text: err.response?.data?.error || 'Terjadi kesalahan saat login'
+      })
     }
   };
 
