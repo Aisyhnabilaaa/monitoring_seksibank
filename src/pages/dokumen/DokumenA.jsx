@@ -182,7 +182,6 @@ const DokumenA = () => {
                     onChange={(e) => setSelectedReason(e.target.value)}
                     checked={selectedReason === "Nomor Rekening Salah"}
                   />
-               ?
                 </Col>
               </Form.Group>
 
