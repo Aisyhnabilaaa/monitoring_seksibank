@@ -1,66 +1,112 @@
-import { useState } from "react";
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { useState } from 'react'
+import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 
 const DokumenE = () => {
   const [values, setValues] = useState({
-    kode: "",
-    contact: "",
-    subject: "",
-    unggah: null,
-  });
+    kode: '',
+    contact: '',
+    unggah: null
+  })
 
-  const [selectedReason, setSelectedReason] = useState(""); // Untuk alasan retur
-  const [customReason, setCustomReason] = useState(""); // Untuk menyimpan input nomor telepon
+  const [selectedOption, setSelectedOption] = useState('') // Iya / tidak
+  const [phoneNumber, setPhoneNumber] = useState('') // Kalau pilih "tidak"
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const handleChanges = (e) => {
-    const { name, value, type, files } = e.target;
+  const handleChanges = e => {
+    const { name, value, type, files } = e.target
 
-    if (name === "subject") {
-      setSelectedReason(value);
+    if (name === 'telegram') {
+      setSelectedOption(value)
     } else {
-      setValues({
-        ...values,
-        [name]: type === "file" ? (files.length > 0 ? files[0] : null) : value,
-      });
+      setValues(prev => ({
+        ...prev,
+        [name]: type === 'file' ? (files.length > 0 ? files[0] : null) : value
+      }))
     }
-  };
+  }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log({
-      ...values,
-      alasanRetur: selectedReason === "tidak" ? customReason : selectedReason,
-    });
-  };
+  const handleSubmit = async e => {
+    e.preventDefault()
+
+    if (selectedOption === 'tidak' && !phoneNumber) {
+      setErrorMessage('Nomor telepon harus diisi jika memilih "Tidak" Telegram')
+      return
+    }
+
+    setErrorMessage('')
+
+    const formData = new FormData()
+    formData.append('kodeSatker', values.kode)
+    formData.append(
+      'noTelpon',
+      selectedOption === 'tidak' ? phoneNumber : 'Tergabung Telegram'
+    )
+    formData.append('jenisRekening', values.contact)
+    if (values.unggah) {
+      formData.append('unggahDokumen', values.unggah)
+    }
+
+    try {
+      const token = localStorage.getItem('token') // jika pakai autentikasi
+      if (!token) throw new Error('Token tidak ditemukan.')
+
+      const response = await fetch(
+        'http://localhost:3000/api/pembukaanRekening/create',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          body: formData
+        }
+      )
+
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.message || 'Gagal mengirim data')
+
+      alert('Pengajuan berhasil dikirim!')
+    } catch (err) {
+      setErrorMessage(`Terjadi kesalahan: ${err.message}`)
+      console.error(err)
+    }
+  }
 
   return (
     <div>
       {/* Header */}
-      <header className="header-dokumen">
+      <header className='header-dokumen'>
         <Container fluid>
-          <Row className="dokumenheader-box d-flex align-items-center justify-content-center">
-            <Col xs={12} md={6} className="text-center text-md-start d-flex flex-column justify-content-center">
-              <div className="dokumenheader-title-container">
-                <h1 className="dokumenheader-title">Pengajuan Persetujuan Pembukaan Rekening</h1>
+          <Row className='dokumenheader-box d-flex align-items-center justify-content-center'>
+            <Col
+              xs={12}
+              md={6}
+              className='text-center text-md-start d-flex flex-column justify-content-center'
+            >
+              <div className='dokumenheader-title-container'>
+                <h1 className='dokumenheader-title'>
+                  Pengajuan Persetujuan Pembukaan Rekening
+                </h1>
               </div>
             </Col>
           </Row>
         </Container>
       </header>
 
+      {/* Form */}
       <Container>
-        {/* Form */}
-        <Row className="justify-content-center mt-4">
+        <Row className='justify-content-center mt-4'>
           <Col md={8} lg={10}>
-            <Form onSubmit={handleSubmit} className="formulir">
+            <Form onSubmit={handleSubmit} className='formulir'>
               {/* Kode Satker */}
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={4}>Kode Satker</Form.Label>
+              <Form.Group as={Row} className='mb-3'>
+                <Form.Label column sm={4}>
+                  Kode Satker
+                </Form.Label>
                 <Col sm={8}>
                   <Form.Control
-                    type="text"
-                    name="kode"
-                    placeholder="Masukkan Kode Satker"
+                    type='text'
+                    name='kode'
+                    placeholder='Masukkan Kode Satker'
                     onChange={handleChanges}
                     required
                     value={values.kode}
@@ -68,35 +114,37 @@ const DokumenE = () => {
                 </Col>
               </Form.Group>
 
-              {/* Nomor Telepon */}
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={4}>Nomor Telepon</Form.Label>
+              {/* Telegram */}
+              <Form.Group as={Row} className='mb-3'>
+                <Form.Label column sm={4}>
+                  Nomor Telepon
+                </Form.Label>
                 <Col sm={8}>
                   <p>Apakah Anda tergabung dengan Telegram KPPN Palu?</p>
                   <Form.Check
-                    type="radio"
-                    label="Iya"
-                    name="subject"
-                    value="Iya"
+                    type='radio'
+                    label='Iya'
+                    name='telegram'
+                    value='iya'
                     onChange={handleChanges}
-                    checked={selectedReason === "Iya"}
+                    checked={selectedOption === 'iya'}
+                    required
                   />
                   <Form.Check
-                    type="radio"
-                    label="Tidak"
-                    name="subject"
-                    value="tidak"
+                    type='radio'
+                    label='Tidak'
+                    name='telegram'
+                    value='tidak'
                     onChange={handleChanges}
-                    checked={selectedReason === "tidak"}
+                    checked={selectedOption === 'tidak'}
                   />
-
-                  {selectedReason === "tidak" && (
+                  {selectedOption === 'tidak' && (
                     <Form.Control
-                      type="text"
-                      placeholder="Masukkan Nomor Telepon Anda"
-                      value={customReason}
-                      onChange={(e) => setCustomReason(e.target.value)}
-                      className="mt-2"
+                      type='text'
+                      placeholder='Masukkan Nomor Telepon Anda'
+                      value={phoneNumber}
+                      onChange={e => setPhoneNumber(e.target.value)}
+                      className='mt-2'
                       required
                     />
                   )}
@@ -104,13 +152,15 @@ const DokumenE = () => {
               </Form.Group>
 
               {/* Jenis Rekening */}
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={4}>Jenis Rekening</Form.Label>
+              <Form.Group as={Row} className='mb-3'>
+                <Form.Label column sm={4}>
+                  Jenis Rekening
+                </Form.Label>
                 <Col sm={8}>
                   <Form.Control
-                    type="text"
-                    name="contact"
-                    placeholder="Masukkan Jenis Rekening"
+                    type='text'
+                    name='contact'
+                    placeholder='Masukkan Jenis Rekening'
                     onChange={handleChanges}
                     required
                     value={values.contact}
@@ -118,30 +168,44 @@ const DokumenE = () => {
                 </Col>
               </Form.Group>
 
-              {/* Unggah Dokumen */}
-              <Form.Group as={Row} className="mb-3">
-                <Form.Label column sm={4}>Unggah Dokumen Persyaratan</Form.Label>
+              {/* Upload */}
+              <Form.Group as={Row} className='mb-3'>
+                <Form.Label column sm={4}>
+                  Unggah Dokumen Persyaratan
+                </Form.Label>
                 <Col sm={8}>
                   <Form.Control
-                    type="file"
-                    name="unggah"
+                    type='file'
+                    name='unggah'
+                    accept='.pdf'
                     onChange={handleChanges}
                     required
                   />
-                  <p className="fs-6 text-warning text-justify">Harap jadikan dokumen persyaratan menjadi satu dokumen PDF</p>
+                  <p className='fs-6 text-warning text-justify'>
+                    Harap jadikan dokumen persyaratan menjadi satu dokumen PDF
+                  </p>
                 </Col>
               </Form.Group>
 
-              {/* Tombol Submit */}
-              <div className="text-end">
-                <Button type="submit" variant="primary">Kirim</Button>
+              {/* Error Message */}
+              {errorMessage && (
+                <div className='alert alert-danger' role='alert'>
+                  {errorMessage}
+                </div>
+              )}
+
+              {/* Submit */}
+              <div className='text-end'>
+                <Button type='submit' variant='primary'>
+                  Kirim
+                </Button>
               </div>
             </Form>
           </Col>
         </Row>
       </Container>
     </div>
-  );
-};
+  )
+}
 
-export default DokumenE;
+export default DokumenE

@@ -1,32 +1,94 @@
-import { Container, Table } from "react-bootstrap";
+import { useEffect, useState } from 'react'
+import { Container, Table, Spinner } from 'react-bootstrap'
+import axios from 'axios'
 
 const MonitoringF = () => {
-  return (
-    <Container className="mt-5 p-5">
-      <h2 className="text-center mb-4">Monitoring Permohonan Pembukaan Rekening Satker</h2>
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const token = localStorage.getItem('token')
+  const fetchData = () => {
+    axios
+      .get('http://localhost:3000/api/monitoringLaporan/', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        setData(response.data)
+      })
+      .catch(error => {
+        console.error('Gagal mengambil data:', error)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }
 
-      <div className="table-responsive">
+  useEffect(() => {
+    fetchData()
+  })
+  return (
+    <Container className='mt-5 p-5'>
+      <h2 className='text-center mb-4'>
+        Monitoring Pembukaan Rekening / Penutupan Rekening
+      </h2>
+
+      <div className='table-responsive'>
         <Table bordered hover>
-          <thead className="table-light">
+          <thead className='table-light'>
             <tr>
               <th>Kode Satker</th>
               <th>Nomor Telepon</th>
-              <th>Jenis Rekening</th>
+              <th>Jenis Laporan</th>
               <th>Dokumen</th>
               <th>Status</th>
+              <th>Catatan</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td colSpan="5" className="text-center text-muted">
-                Tidak ada data tersedia
-              </td>
-            </tr>
+            {loading ? (
+              <tr>
+                <td colSpan='5' className='text-center'>
+                  <Spinner animation='border' variant='primary' />
+                </td>
+              </tr>
+            ) : data.length === 0 ? (
+              <tr>
+                <td colSpan='5' className='text-center text-muted'>
+                  Tidak ada data tersedia
+                </td>
+              </tr>
+            ) : (
+              data.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.laporanRekening.kodeSatker || '-'}</td>
+                  <td>{item.laporanRekening.noTelpon || '-'}</td>
+                  <td>{item.laporanRekening.jenisLaporan || '-'}</td>
+                  <td>
+                    {item.laporanRekening.unggahDokumen ? (
+                      <a
+                        href={`http://localhost:3000/uploads/${item.laporanRekening.unggahDokumen}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      >
+                        Lihat Dokumen
+                      </a>
+                    ) : (
+                      '-'
+                    )}
+                  </td>
+                  <td>
+                    <span>{item.status || 'DIPROSES'}</span>
+                  </td>
+                  <td>{item.catatan || '-'}</td>
+                </tr>
+              ))
+            )}
           </tbody>
         </Table>
       </div>
     </Container>
-  );
-};
+  )
+}
 
-export default MonitoringF;
+export default MonitoringF

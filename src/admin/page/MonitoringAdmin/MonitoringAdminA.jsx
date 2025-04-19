@@ -1,101 +1,165 @@
-import { useEffect, useState } from "react";
-import { Container, Table } from "react-bootstrap";
-import { BsFillTrashFill } from "react-icons/bs";
-import axios from "axios";
+import { useEffect, useState } from 'react'
+import { Container, Table, Spinner, Form } from 'react-bootstrap'
+import axios from 'axios'
 
 const MonitoringAdminA = () => {
-  const [returs, setReturs] = useState([]);
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  const fetchData = () => {
+    const token = localStorage.getItem('token') // ambil token
+    axios
+    axios
+      .get('http://localhost:3000/api/monitoringRetur/', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      .then(response => {
+        setData(response.data)
+      })
+      .catch(error => {
+        console.error('Gagal mengambil data:', error)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/api/retur/admin", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setReturs(response.data);
-      } catch (error) {
-        console.error("Gagal mengambil data retur:", error.response?.data || error.message);
-      }
-    };
-
-    fetchData();
-  }, []);
+    fetchData()
+  }, [])
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.patch(`http://localhost:5000/api/retur/admin/${id}`, { status: newStatus }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const token = localStorage.getItem('token')
+      await axios.patch(
+        `http://localhost:3000/api/monitoringRetur/${id}`,
+        {
+          status: newStatus
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
 
-      setReturs((prev) =>
-        prev.map((retur) => (retur.id === id ? { ...retur, status: newStatus } : retur))
-      );
+      // Update status secara langsung pada data yang ada di state
+      setData(prevData =>
+        prevData.map(item =>
+          item.id === id ? { ...item, status: newStatus } : item
+        )
+      )
     } catch (error) {
-      console.error("Gagal mengubah status:", error.response?.data || error.message);
+      console.error('Gagal update status:', error)
     }
-  };
+  }
 
-  const handleDelete = async (id) => {
+  const handleCatatanChange = async (id, newCatatan) => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/retur/admin/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const token = localStorage.getItem('token')
+      await axios.patch(
+        `http://localhost:3000/api/monitoringRetur/${id}`,
+        {
+          catatan: newCatatan
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      )
 
-      setReturs((prev) => prev.filter((retur) => retur.id !== id));
+      // Update catatan secara langsung pada data yang ada di state
+      setData(prevData =>
+        prevData.map(item =>
+          item.id === id ? { ...item, catatan: newCatatan } : item
+        )
+      )
     } catch (error) {
-      console.error("Gagal menghapus:", error.response?.data || error.message);
+      console.error('Gagal update catatan:', error)
     }
-  };
+  }
 
   return (
-    <Container className="p-5">
-      <h2 className="text-center mb-4">Monitoring Penyelesaian Retur SP2D</h2>
+    <Container className='mt-5 p-5'>
+      <h2 className='text-center mb-4'>Monitoring Penyelesaian Retur SP2D</h2>
 
-      <div className="table-responsive">
+      <div className='table-responsive'>
         <Table bordered hover>
-          <thead className="table-light">
+          <thead className='table-light'>
             <tr>
               <th>Kode Satker</th>
               <th>Nomor Telepon</th>
               <th>Alasan Retur</th>
               <th>Dokumen</th>
               <th>Status</th>
-              <th>Aksi</th>
+              <th>Catatan</th>
             </tr>
           </thead>
           <tbody>
-            {returs.map((retur) => (
-              <tr key={retur.id}>
-                <td>{retur.kodeSatker}</td>
-                <td>{retur.noTelpon}</td>
-                <td>{retur.alasanRetur}</td>
-                <td><a href={`http://localhost:5000/${retur.unggah_dokumen}`} target="_blank" rel="noreferrer">Lihat</a></td>
-                <td>
-                  <select value={retur.status} onChange={(e) => handleStatusChange(retur.id, e.target.value)}>
-                    <option value="DIPROSES">DIPROSES</option>
-                    <option value="DITOLAK">DITOLAK</option>
-                    <option value="SELESAI">SELESAI</option>
-                  </select>
-                </td>
-                <td>
-                  <BsFillTrashFill className="delete-btn" onClick={() => handleDelete(retur.id)} />
+            {loading ? (
+              <tr>
+                <td colSpan='6' className='text-center'>
+                  <Spinner animation='border' variant='primary' />
                 </td>
               </tr>
-            ))}
+            ) : data.length === 0 ? (
+              <tr>
+                <td colSpan='6' className='text-center text-muted'>
+                  Tidak ada data tersedia
+                </td>
+              </tr>
+            ) : (
+              data.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.returSp2d.kodeSatker || '-'}</td>
+                  <td>{item.returSp2d.noTelpon || '-'}</td>
+                  <td>{item.returSp2d.alasanRetur || '-'}</td>
+                  <td>
+                    {item.returSp2d.unggah_dokumen ? (
+                      <a
+                        href={`http://localhost:3000/uploads/${item.returSp2d.unggah_dokumen}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      >
+                        Lihat Dokumen
+                      </a>
+                    ) : (
+                      '-'
+                    )}
+                  </td>
+                  <td>
+                    <Form.Select
+                      value={item.status || 'DIPROSES'}
+                      onChange={e =>
+                        handleStatusChange(item.id, e.target.value)
+                      }
+                    >
+                      <option value='DIPROSES'>Diproses</option>
+                      <option value='SELESAI'>Selesai</option>
+                      <option value='DITOLAK'>Ditolak</option>
+                    </Form.Select>
+                  </td>
+                  <td>
+                    <Form.Control
+                      as='textarea'
+                      rows={3}
+                      value={item.catatan || ''}
+                      onChange={e =>
+                        handleCatatanChange(item.id, e.target.value)
+                      }
+                    />
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </Table>
       </div>
     </Container>
-  );
-};
+  )
+}
 
-export default MonitoringAdminA;
+export default MonitoringAdminA
