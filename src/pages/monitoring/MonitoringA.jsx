@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Container, Table, Spinner } from 'react-bootstrap'
+import { Container, Table, Spinner, Button, Form } from 'react-bootstrap'
 import axios from 'axios'
 
 const MonitoringA = () => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
+  const [fileInputs, setFileInputs] = useState({})
 
   const fetchData = () => {
     axios
@@ -24,6 +25,37 @@ const MonitoringA = () => {
     fetchData()
   }, [])
 
+  const handleFileChange = (id, file) => {
+    setFileInputs(prev => ({
+      ...prev,
+      [id]: file
+    }))
+  }
+
+  const handleUpload = async id => {
+    const file = fileInputs[id]
+    if (!file) return
+
+    const formData = new FormData()
+    formData.append('unggah_dokumen', file)
+
+    try {
+      await axios.patch(`http://localhost:3000/api/retur/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${localStorage.getItem('token')}` // Menambahkan token
+        }
+      })
+
+      // Fetch data lagi setelah berhasil upload
+      fetchData()
+      alert('Upload berhasil!')
+    } catch (error) {
+      console.error('Gagal upload ulang dokumen:', error)
+      alert('Upload gagal!')
+    }
+  }
+
   return (
     <Container className='mt-5 p-5'>
       <h2 className='text-center mb-4'>Monitoring Penyelesaian Retur SP2D</h2>
@@ -38,18 +70,19 @@ const MonitoringA = () => {
               <th>Dokumen</th>
               <th>Status</th>
               <th>Catatan</th>
+              <th>Upload Ulang</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan='5' className='text-center'>
+                <td colSpan='7' className='text-center'>
                   <Spinner animation='border' variant='primary' />
                 </td>
               </tr>
             ) : data.length === 0 ? (
               <tr>
-                <td colSpan='5' className='text-center text-muted'>
+                <td colSpan='7' className='text-center text-muted'>
                   Tidak ada data tersedia
                 </td>
               </tr>
@@ -76,6 +109,27 @@ const MonitoringA = () => {
                     <span>{item.status || 'DIPROSES'}</span>
                   </td>
                   <td>{item.catatan || '-'}</td>
+                  <td>
+                    {item.status === 'DITOLAK' && (
+                      <div>
+                        <Form.Control
+                          type='file'
+                          accept='.pdf,.jpg,.png'
+                          onChange={e =>
+                            handleFileChange(item.id, e.target.files[0])
+                          }
+                        />
+                        <Button
+                          className='mt-2'
+                          size='sm'
+                          variant='primary'
+                          onClick={() => handleUpload(item.id)}
+                        >
+                          Upload Ulang
+                        </Button>
+                      </div>
+                    )}
+                  </td>
                 </tr>
               ))
             )}
