@@ -1,18 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Container, Table, Spinner } from 'react-bootstrap'
+import { Container, Table, Spinner, Form, Button } from 'react-bootstrap'
 import axios from 'axios'
 
 const MonitoringH = () => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
-  const token = localStorage.getItem('token')
+  const [fileInputs, setFileInputs] = useState({})
   const fetchData = () => {
     axios
-      .get('http://localhost:3000/api/monitoringPenerbitanBukti/', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      .get('http://localhost:3000/api/monitoringPenerbitanBukti/')
       .then(response => {
         setData(response.data)
       })
@@ -26,7 +22,40 @@ const MonitoringH = () => {
 
   useEffect(() => {
     fetchData()
-  })
+  }, [])
+
+  const handleFileChange = (id, file) => {
+    setFileInputs(prev => ({
+      ...prev,
+      [id]: file
+    }))
+  }
+
+  const handleUpload = async id => {
+    const file = fileInputs[id]
+    if (!file) return
+
+    const formData = new FormData()
+    formData.append('unggah_Dokumen', file)
+
+    try {
+      await axios.patch(
+        `http://localhost:3000/api/penerbitanBukti/${id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      )
+      fetchData()
+      alert('Upload Berhasil')
+    } catch (error) {
+      console.error('Gagal Upload dokumen ', error)
+      alert('Upload Gagal')
+    }
+  }
   return (
     <Container className='mt-5 p-5'>
       <h2 className='text-center mb-4'>Monitoring Penerbitan Bukti Negara</h2>
@@ -58,7 +87,7 @@ const MonitoringH = () => {
               </tr>
             ) : (
               data.map((item, index) => (
-                <tr key={index}>
+                <tr key={item.penerbitanBukti.id || index}>
                   <td>{item.penerbitanBukti.kodeSatker || '-'}</td>
                   <td>{item.penerbitanBukti.noTelpon || '-'}</td>
                   <td>{item.penerbitanBukti.alasanRetur || '-'}</td>
@@ -79,6 +108,27 @@ const MonitoringH = () => {
                     <span>{item.status || 'DIPROSES'}</span>
                   </td>
                   <td>{item.catatan || '-'}</td>
+                  <td>
+                    {item.status === 'DITOLAK' && (
+                      <div>
+                        <Form.Control
+                          type='file'
+                          accept='.pdf,.jpg,.png'
+                          onChange={e =>
+                            handleFileChange(item.id, e.target.files[0])
+                          }
+                        />
+                        <Button
+                          className='mt-2'
+                          size='sm'
+                          variant='primary'
+                          onClick={() => handleUpload(item.id)}
+                        >
+                          Upload Ulang
+                        </Button>
+                      </div>
+                    )}
+                  </td>
                 </tr>
               ))
             )}

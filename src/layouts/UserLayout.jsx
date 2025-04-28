@@ -1,15 +1,19 @@
-import { Outlet } from "react-router-dom";
-import NavbarComponent from "../components/NavbarComponent";
-import FooterComponent from "../components/FooterComponent"
+import { Outlet } from 'react-router-dom'
+import NavbarComponent from '../components/NavbarComponent'
+import FooterComponent from '../components/FooterComponent'
 
-const UserLayout = () => {
+function UserLayout () {
   return (
-    <div>
+    <div className='layout'>
       <NavbarComponent />
-      <Outlet />
+
+      <main className='main-content'>
+        <Outlet />
+      </main>
+
       <FooterComponent />
     </div>
-  );
-};
+  )
+}
 
-export default UserLayout;
+export default UserLayout

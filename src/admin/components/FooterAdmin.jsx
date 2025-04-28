@@ -4,7 +4,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css'
 
 const FooterComponent = () => {
   return (
-    <footer className='footer'>
+    <footer className='admin-footer'>
       <Container className=''>
         <Row>
           <Col className='kontak mt-5'>

@@ -1,11 +1,10 @@
-import React from 'react'
-
-const berandaAdmin = () => {
+import MonitoringPage from './MonitoringAdmin/MonitoringPage'
+const BerandaAdmin = () => {
   return (
     <div>
-      <h1 className='mt-5'>HALOO</h1>
+      <MonitoringPage />
     </div>
   )
 }
 
-export default berandaAdmin
+export default BerandaAdmin

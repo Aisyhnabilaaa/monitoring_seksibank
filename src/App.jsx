@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 
 import UserLayout from './layouts/UserLayout'
 import AdminLayout from './admin/AdminLayout'
-import BerandaAdmin from './admin/page/berandaAdmin'
+import BerandaAdmin from './admin/page/BerandaAdmin'
 
 import HomePage from './pages/HomePage'
 import Monitoring from './pages/MonitoringPage'

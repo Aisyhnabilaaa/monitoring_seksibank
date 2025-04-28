@@ -1,18 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Container, Table, Spinner } from 'react-bootstrap'
+import { Container, Table, Spinner, Button, Form } from 'react-bootstrap'
 import axios from 'axios'
 
 const MonitoringF = () => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
-  const token = localStorage.getItem('token')
+  const [fileInputs, setFileInputs] = useState({})
   const fetchData = () => {
     axios
-      .get('http://localhost:3000/api/monitoringLaporan/', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
+      .get('http://localhost:3000/api/monitoringLaporan/')
       .then(response => {
         setData(response.data)
       })
@@ -26,7 +22,40 @@ const MonitoringF = () => {
 
   useEffect(() => {
     fetchData()
-  })
+  }, [])
+
+  const handleFileChange = (id, file) => {
+    setFileInputs(prev => ({
+      ...prev,
+      [id]: file
+    }))
+  }
+
+  const handleUpload = async id => {
+    const file = fileInputs[id]
+    if (!file) return
+
+    const formData = new FormData()
+    formData.append('unggahDokumen', file)
+
+    try {
+      await axios.patch(
+        `http://localhost:3000/api/laporanRekening/${id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
+        }
+      )
+      fetchData()
+      alert('upload Berhasil')
+    } catch (error) {
+      console.error('Gagal Upload dokumen:', error)
+      alert('upload gagal')
+    }
+  }
   return (
     <Container className='mt-5 p-5'>
       <h2 className='text-center mb-4'>
@@ -43,6 +72,7 @@ const MonitoringF = () => {
               <th>Dokumen</th>
               <th>Status</th>
               <th>Catatan</th>
+              <th>Upload Ulang</th>
             </tr>
           </thead>
           <tbody>
@@ -60,7 +90,7 @@ const MonitoringF = () => {
               </tr>
             ) : (
               data.map((item, index) => (
-                <tr key={index}>
+                <tr key={item.laporanRekening.id || index}>
                   <td>{item.laporanRekening.kodeSatker || '-'}</td>
                   <td>{item.laporanRekening.noTelpon || '-'}</td>
                   <td>{item.laporanRekening.jenisLaporan || '-'}</td>
@@ -81,6 +111,27 @@ const MonitoringF = () => {
                     <span>{item.status || 'DIPROSES'}</span>
                   </td>
                   <td>{item.catatan || '-'}</td>
+                  <td>
+                    {item.status === 'DITOLAK' && (
+                      <div>
+                        <Form.Control
+                          type='file'
+                          accept='.pdf,.jpg,.png'
+                          onChange={e =>
+                            handleFileChange(item.id, e.target.files[0])
+                          }
+                        />
+                        <Button
+                          className='mt-2'
+                          size='sm'
+                          variant='primary'
+                          onClick={() => handleUpload(item.id)}
+                        >
+                          Upload Ulang
+                        </Button>
+                      </div>
+                    )}
+                  </td>
                 </tr>
               ))
             )}
