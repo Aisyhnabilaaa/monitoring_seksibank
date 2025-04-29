@@ -21,9 +21,13 @@ const Login = () => {
       const res = await axios.post('http://localhost:3000/api/auth/login', form)
       const token = res.data.data.token
       const role = res.data.data.user.role
+      const id = res.data.data.user.id
 
       localStorage.setItem('token', token)
       localStorage.setItem('role', role)
+      localStorage.setItem('id', id) // Simpan ID pengguna
+
+      window.dispatchEvent(new Event('userLoggedIn'))
 
       Swal.fire({
         icon: 'success',

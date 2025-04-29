@@ -41,7 +41,7 @@ const MonitoringPage = () => {
           <Col>
             <h1 className='fw-bold'>
               <span className='text-primary'>Monitoring Layanan </span>
-              <span className='text-success'>Seksi Bank KPPN Palu</span>
+              <span className='text-warning'>Seksi Bank KPPN Palu</span>
             </h1>
             <p className='text-muted'>
               Silahkan pilih menu layanan di bawah ini

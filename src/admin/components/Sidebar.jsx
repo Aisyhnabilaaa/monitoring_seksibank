@@ -1,113 +1,90 @@
 import 'bootstrap-icons/font/bootstrap-icons.css'
-import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import axios from 'axios' // Pakai axios untuk request API
 
 const Sidebar = () => {
   const [isMonitoringOpen, setMonitoringOpen] = useState(false)
+  const [isUserMenuOpen, setUserMenuOpen] = useState(false)
+  const [username, setUsername] = useState('') // Buat state username
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    // Fungsi fetch data user
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        const id = localStorage.getItem('id')
+        console.log('User ID:', id) // Periksa nilai ID
+
+        const response = await axios.get(
+          `http://localhost:3000/api/user/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
+        )
+
+        setUsername(response.data.namaLengkap)
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+      }
+    }
+
+    fetchUser()
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    navigate('/login')
+  }
 
   return (
     <div className='sidebar-container'>
       <div className='sidebar'>
         <ul className='sidebar-menu'>
+          {/* Home */}
           <li className='sidebar-item'>
             <Link className='sidebar-link' to='/admin'>
-              <i className='bi bi-house sidebar-icon'></i>
-              <span className='sidebar-text'>Home</span>
+              <div className='sidebar-left'>
+                <i className='bi bi-house sidebar-icon'></i>
+                <span className='sidebar-text'>Home</span>
+              </div>
             </Link>
           </li>
-          {/* Monitoring dengan Submenu */}
+
+          {/* Monitoring Dropdown */}
           <li className='sidebar-item'>
             <button
               className='sidebar-link dropdown-btn'
               onClick={() => setMonitoringOpen(!isMonitoringOpen)}
             >
-              <i className='monitoringcon bi bi-table sidebar-icon'></i>
-              <span className='sidebar-text'>Monitoring</span>
+              <div className='sidebar-left'>
+                <i className='bi bi-table sidebar-icon'></i>
+                <span className='sidebar-text'>Monitoring</span>
+              </div>
               <i
                 className={`bi bi-chevron-${
                   isMonitoringOpen ? 'up' : 'down'
-                } ms-auto`}
+                } sidebar-arrow`}
               ></i>
             </button>
 
-            {/* Submenu untuk Monitoring */}
             {isMonitoringOpen && (
-              <div className='submenu-cotainer'>
-                <ul className='sidebar-submenu'>
-                  <li>
+              <ul className='sidebar-submenu'>
+                {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'].map(item => (
+                  <li key={item}>
                     <Link
-                      to='/admin/monitoring/a'
+                      to={`/admin/monitoring/${item.toLowerCase()}`}
                       className='sidebar-submenu-link'
                     >
-                      Monitoring A
+                      Monitoring {item}
                     </Link>
                   </li>
-                  <li>
-                    <Link
-                      to='/admin/monitoring/b'
-                      className='sidebar-submenu-link'
-                    >
-                      Monitoring B
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to='/admin/monitoring/c'
-                      className='sidebar-submenu-link'
-                    >
-                      Monitoring C
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to='/admin/monitoring/d'
-                      className='sidebar-submenu-link'
-                    >
-                      Monitoring D
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to='/admin/monitoring/e'
-                      className='sidebar-submenu-link'
-                    >
-                      Monitoring E
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to='/admin/monitoring/f'
-                      className='sidebar-submenu-link'
-                    >
-                      Monitoring F
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to='/admin/monitoring/g'
-                      className='sidebar-submenu-link'
-                    >
-                      Monitoring G
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to='/admin/monitoring/h'
-                      className='sidebar-submenu-link'
-                    >
-                      Monitoring H
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to='/admin/monitoring/i'
-                      className='sidebar-submenu-link'
-                    >
-                      Monitoring I
-                    </Link>
-                  </li>
-                </ul>
-              </div>
+                ))}
+              </ul>
             )}
           </li>
         </ul>
@@ -117,7 +94,24 @@ const Sidebar = () => {
           <hr className='text-secondary' />
           <div className='sidebar-user'>
             <i className='bi bi-person fs-5'></i>
-            <span>Dirimu</span>
+            <span className='sidebar-username'>
+              {username ? username : <div className='spinner'></div>}
+            </span>
+            <button
+              className='user-menu-toggle'
+              onClick={() => setUserMenuOpen(!isUserMenuOpen)}
+            >
+              <i className='bi bi-three-dots-vertical'></i>
+            </button>
+
+            {/* Dropdown menu logout */}
+            {isUserMenuOpen && (
+              <div className='user-menu'>
+                <button onClick={handleLogout} className='logout-btn'>
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -1,9 +1,64 @@
 import { Navbar, Container, Nav, NavDropdown } from 'react-bootstrap'
-import { NavLink } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { NavLink } from 'react-router-dom'
+import { FaUser } from 'react-icons/fa'
+import axios from 'axios'
 
 const NavbarComponent = () => {
   const navigate = useNavigate()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [username, setUsername] = useState('')
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    const id = localStorage.getItem('id')
+
+    if (token && id) {
+      setIsLoggedIn(true)
+
+      axios
+        .get(`http://localhost:3000/api/user/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(response => {
+          setUsername(response.data.email)
+        })
+        .catch(error => {
+          console.error('Gagal ambil data user:', error)
+          setIsLoggedIn(false)
+        })
+    }
+
+    // Tambahkan event listener
+    const handleLoginEvent = () => {
+      const token = localStorage.getItem('token')
+      const id = localStorage.getItem('id')
+      if (token && id) {
+        setIsLoggedIn(true)
+        axios
+          .get(`http://localhost:3000/api/user/${id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
+          .then(response => {
+            setUsername(response.data.namaLengkap)
+          })
+      }
+    }
+
+    window.addEventListener('userLoggedIn', handleLoginEvent)
+
+    return () => {
+      window.removeEventListener('userLoggedIn', handleLoginEvent)
+    }
+  }, [])
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('id')
+    setIsLoggedIn(false)
+    navigate('/')
+  }
 
   return (
     <Navbar expand='lg' className='bg-light shadow-md fixed-top'>
@@ -143,19 +198,38 @@ const NavbarComponent = () => {
             </NavLink>
           </Nav>
 
-          <div className='d-flex gap-4'>
-            <button
-              className='btn btn-outline-primary'
-              onClick={() => navigate('/login')}
-            >
-              Masuk
-            </button>
-            <button
-              className='btn btn-outline-primary'
-              onClick={() => navigate('/register')}
-            >
-              Daftar
-            </button>
+          <div className='d-flex gap-4 align-items-center'>
+            {isLoggedIn ? (
+              <>
+                <div className='d-flex align-items-center gap-2'>
+                  <FaUser size={20} />
+                  <span className='fw-semibold text-muted'>
+                    {username || '...'}
+                  </span>
+                </div>
+                <button
+                  className='btn btn-outline-danger'
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className='btn btn-outline-primary'
+                  onClick={() => navigate('/login')}
+                >
+                  Masuk
+                </button>
+                <button
+                  className='btn btn-outline-primary'
+                  onClick={() => navigate('/register')}
+                >
+                  Daftar
+                </button>
+              </>
+            )}
           </div>
         </Navbar.Collapse>
       </Container>
