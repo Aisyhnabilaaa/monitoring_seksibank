@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
+import Swal from 'sweetalert2'
 
 const DokumenC = () => {
   const [values, setValues] = useState({
@@ -93,11 +94,19 @@ const DokumenC = () => {
         throw new Error(result.message || 'Gagal mengirim data')
       }
 
-      alert('Pengajuan berhasil dikirim!')
+      Swal.fire({
+        title: 'Pengajuan Dokumen Berhasil!',
+        icon: 'success',
+        draggable: true
+      })
       console.log(result)
     } catch (err) {
       setErrorMessage(`Terjadi kesalahan: ${err.message}`)
-      console.error(err)
+      Swal.fire({
+        title: 'Gagal Mengirim Dokumen!',
+        icon: 'warning',
+        draggable: true
+      })
     }
   }
 
@@ -114,7 +123,7 @@ const DokumenC = () => {
             >
               <div className='dokumenheader-title-container'>
                 <h1 className='dokumenheader-title'>
-                  Pengajuan Penerbitan Nota Konfirmasi atas Penerimaan Negara
+                  Koreksi Penerimaan Negara Atas Setoran Satuan Kerja
                 </h1>
               </div>
             </Col>

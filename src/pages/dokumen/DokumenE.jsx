@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
+import Swal from 'sweetalert2'
 
 const DokumenE = () => {
   const [values, setValues] = useState({
@@ -64,10 +65,18 @@ const DokumenE = () => {
       const data = await response.json()
       if (!response.ok) throw new Error(data.message || 'Gagal mengirim data')
 
-      alert('Pengajuan berhasil dikirim!')
+      Swal.fire({
+        title: 'Pengajuan Dokumen Berhasil!',
+        icon: 'success',
+        draggable: true
+      })
     } catch (err) {
       setErrorMessage(`Terjadi kesalahan: ${err.message}`)
-      console.error(err)
+      Swal.fire({
+        title: 'Gagal Mengirim Dokumen!',
+        icon: 'warning',
+        draggable: true
+      })
     }
   }
 

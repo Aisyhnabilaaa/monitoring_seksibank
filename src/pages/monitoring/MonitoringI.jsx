@@ -51,7 +51,6 @@ const MonitoringI = () => {
         }
       )
       fetchData()
-      alert('Upload Berhasil')
     } catch (error) {
       console.error('Gagal Upload ulang dokumen:', error)
       alert('upload gagal')

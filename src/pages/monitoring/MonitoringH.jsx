@@ -67,6 +67,7 @@ const MonitoringH = () => {
               <th>Kode Satker</th>
               <th>Nomor Telepon</th>
               <th>Alasan Retur</th>
+              <th>Alasan Lainnya</th>
               <th>Dokumen</th>
               <th>Status</th>
               <th>Catatan</th>
@@ -91,6 +92,7 @@ const MonitoringH = () => {
                   <td>{item.penerbitanBukti.kodeSatker || '-'}</td>
                   <td>{item.penerbitanBukti.noTelpon || '-'}</td>
                   <td>{item.penerbitanBukti.alasanRetur || '-'}</td>
+                  <td>{item.penerbitanBukti.alasanLainnya || '-'}</td>
                   <td>
                     {item.penerbitanBukti.unggah_dokumen ? (
                       <a

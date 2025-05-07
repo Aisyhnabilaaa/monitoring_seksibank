@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import 'sweetalert2/dist/sweetalert2.min.css'
 
 import UserLayout from './layouts/UserLayout'
 import AdminLayout from './admin/AdminLayout'
@@ -50,6 +51,7 @@ import MonitoringAdminF from './admin/page/MonitoringAdmin/MonitoringAdminF'
 import MonitoringAdminG from './admin/page/MonitoringAdmin/MonitoringAdminG'
 import MonitoringAdminH from './admin/page/MonitoringAdmin/MonitoringAdminH'
 import MonitoringAdminI from './admin/page/MonitoringAdmin/MonitoringAdminI'
+import NotifikasiPage from './admin/page/NotifikasiAdmin'
 
 function App () {
   return (
@@ -158,6 +160,7 @@ function App () {
       {/* Routes untuk Admin */}
       <Route path='/admin' element={<AdminLayout />}>
         <Route index element={<BerandaAdmin />} />
+        <Route path='/admin/notifikasi' element={<NotifikasiPage />} />
         <Route path='monitoring/a' element={<MonitoringAdminA />} />
         <Route path='monitoring/b' element={<MonitoringAdminB />} />
         <Route path='monitoring/c' element={<MonitoringAdminC />} />

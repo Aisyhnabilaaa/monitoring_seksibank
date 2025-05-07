@@ -59,7 +59,6 @@ const MonitoringA = () => {
   return (
     <Container className='mt-5 p-5'>
       <h2 className='text-center mb-4'>Monitoring Penyelesaian Retur SP2D</h2>
-
       <div className='table-responsive'>
         <Table bordered hover>
           <thead className='table-light'>
@@ -67,6 +66,7 @@ const MonitoringA = () => {
               <th>Kode Satker</th>
               <th>Nomor Telepon</th>
               <th>Alasan Retur</th>
+              <th>Alasan Lainnya</th>
               <th>Dokumen</th>
               <th>Status</th>
               <th>Catatan</th>
@@ -92,6 +92,7 @@ const MonitoringA = () => {
                   <td>{item.returSp2d.kodeSatker || '-'}</td>
                   <td>{item.returSp2d.noTelpon || '-'}</td>
                   <td>{item.returSp2d.alasanRetur || '-'}</td>
+                  <td>{item.returSp2d.alasanLainnya || '-'}</td>
                   <td>
                     {item.returSp2d.unggah_dokumen ? (
                       <a

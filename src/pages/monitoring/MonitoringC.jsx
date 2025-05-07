@@ -10,6 +10,7 @@ const MonitoringC = () => {
     axios
       .get('http://localhost:3000/api/monitoringKoreksi/')
       .then(response => {
+        console.log(response.data) // Tambahkan log ini
         setData(response.data)
       })
       .catch(error => {

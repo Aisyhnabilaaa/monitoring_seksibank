@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 
 const DokumenH = () => {
   const [values, setValues] = useState({
@@ -75,7 +76,11 @@ const DokumenH = () => {
         }
       )
 
-      alert('Berhasil mengirim retur SP2D!')
+      Swal.fire({
+        title: 'Pengajuan Dokumen Berhasil!',
+        icon: 'success',
+        draggable: true
+      })
       setValues({ kode: '', unggah: null })
       setTelegramGroup('')
       setPhoneNumber('')
@@ -84,7 +89,11 @@ const DokumenH = () => {
       console.log(response.data)
     } catch (error) {
       console.error('Gagal mengirim:', error.response?.data || error.message)
-      alert('Gagal mengirim pengajuan retur!')
+      Swal.fire({
+        title: 'Gagal Mengirim Dokumen!',
+        icon: 'warning',
+        draggable: true
+      })
     }
   }
 
@@ -100,7 +109,7 @@ const DokumenH = () => {
             >
               <div className='dokumenheader-title-container'>
                 <h1 className='dokumenheader-title'>
-                  Penyelesaian Retur atas SP2D
+                  Penerbitan Bukti Penerimaan Negara
                 </h1>
               </div>
             </Col>

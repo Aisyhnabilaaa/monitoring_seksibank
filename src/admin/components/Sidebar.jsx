@@ -7,6 +7,7 @@ const Sidebar = () => {
   const [isMonitoringOpen, setMonitoringOpen] = useState(false)
   const [isUserMenuOpen, setUserMenuOpen] = useState(false)
   const [username, setUsername] = useState('') // Buat state username
+  const [notifCount, setNotifCount] = useState(0) // State untuk jumlah notifikasi
 
   const navigate = useNavigate()
 
@@ -14,7 +15,7 @@ const Sidebar = () => {
     // Fungsi fetch data user
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem('admin_token')
         const id = localStorage.getItem('id')
         console.log('User ID:', id) // Periksa nilai ID
 
@@ -36,6 +37,27 @@ const Sidebar = () => {
     fetchUser()
   }, [])
 
+  useEffect(() => {
+    // Fetch jumlah notifikasi
+    const fetchNotif = async () => {
+      try {
+        const id = localStorage.getItem('id')
+        const response = await axios.get(
+          `http://localhost:3000/notifikasi/${id}`
+        )
+        // Misal field status = 'false' untuk unread
+        const unreadNotif = response.data.filter(n => n.status === 'unread')
+        setNotifCount(unreadNotif.length)
+      } catch (error) {
+        console.error('Error fetching notifications:', error)
+      }
+    }
+
+    fetchNotif()
+    const interval = setInterval(fetchNotif, 10000)
+    return () => clearInterval(interval)
+  }, [])
+
   const handleLogout = () => {
     localStorage.removeItem('token')
     navigate('/login')
@@ -51,6 +73,21 @@ const Sidebar = () => {
               <div className='sidebar-left'>
                 <i className='bi bi-house sidebar-icon'></i>
                 <span className='sidebar-text'>Home</span>
+              </div>
+            </Link>
+          </li>
+
+          {/* Notifikasi */}
+          <li className='sidebar-item'>
+            <Link className='sidebar-link' to='/admin/notifikasi'>
+              <div className='sidebar-left'>
+                <i className='bi bi-bell sidebar-icon'></i>
+                <span className='sidebar-text'>Notifikasi</span>
+                {notifCount > 0 && (
+                  <span className='badge bg-danger rounded-pill ms-2'>
+                    {notifCount}
+                  </span>
+                )}
               </div>
             </Link>
           </li>

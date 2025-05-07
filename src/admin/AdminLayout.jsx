@@ -1,14 +1,17 @@
 import Sidebar from './components/Sidebar'
 import { Outlet } from 'react-router-dom'
+import { ProtectedRoute } from './page/MonitoringAdmin/protect'
 
 const AdminLayout = () => {
   return (
-    <div className='admin-layout'>
-      <Sidebar />
-      <div className='content-container'>
-        <Outlet />
+    <ProtectedRoute allowedRole={['admin']}>
+      <div className='admin-layout'>
+        <Sidebar />
+        <div className='content-container'>
+          <Outlet />
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   )
 }
 

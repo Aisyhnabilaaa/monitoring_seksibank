@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Container, Table, Spinner, Form } from 'react-bootstrap'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 
 const MonitoringAdminI = () => {
   const [data, setData] = useState([])
@@ -74,6 +75,40 @@ const MonitoringAdminI = () => {
     }
   }
 
+  const handleDelete = async id => {
+    const result = await Swal.fire({
+      title: 'Apakah Anda yakin?',
+      text: 'Data akan dihapus permanen!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Ya, hapus!',
+      cancelButtonText: 'Batal'
+    })
+    if (result.confirmDelete) return
+
+    try {
+      const token = localStorage.getItem('token')
+      await axios.delete(`http://localhost:3000/api/monitoringKoreksi/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      // Hapus data dari state
+      setData(prevData => prevData.filter(item => item.id !== id))
+
+      Swal.fire({
+        title: 'Monitoring Berhasil Dihapus',
+        icon: 'success'
+      })
+    } catch (error) {
+      console.error('Gagal menghapus data:', error)
+      alert(error.response?.data?.message || 'Gagal menghapus data')
+    }
+  }
+
   return (
     <Container className='mt-5 p-5'>
       <h2 className='text-center mb-4'>Monitoring Pengembalian PNBP</h2>
@@ -88,6 +123,7 @@ const MonitoringAdminI = () => {
               <th>Dokumen</th>
               <th>Status</th>
               <th>Catatan</th>
+              <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -143,6 +179,14 @@ const MonitoringAdminI = () => {
                         handleCatatanChange(item.id, e.target.value)
                       }
                     />
+                  </td>
+                  <td>
+                    <button
+                      className='btn btn-danger btn-sm'
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      Hapus
+                    </button>
                   </td>
                 </tr>
               ))

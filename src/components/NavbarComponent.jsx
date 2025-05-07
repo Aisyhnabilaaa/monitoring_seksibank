@@ -8,50 +8,32 @@ import axios from 'axios'
 const NavbarComponent = () => {
   const navigate = useNavigate()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [username, setUsername] = useState('')
+  const [username, setUsername] = useState({})
+
+  const token = localStorage.getItem('token')
+  console.log(token)
+  const id = localStorage.getItem('id')
+  console.log(id)
+
+  const getUser = async id => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/user/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      const result = response.data
+      setUsername(result)
+      setIsLoggedIn(true)
+      console.log('isi navbar', result)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const id = localStorage.getItem('id')
-
-    if (token && id) {
-      setIsLoggedIn(true)
-
-      axios
-        .get(`http://localhost:3000/api/user/${id}`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        .then(response => {
-          setUsername(response.data.email)
-        })
-        .catch(error => {
-          console.error('Gagal ambil data user:', error)
-          setIsLoggedIn(false)
-        })
-    }
-
-    // Tambahkan event listener
-    const handleLoginEvent = () => {
-      const token = localStorage.getItem('token')
-      const id = localStorage.getItem('id')
-      if (token && id) {
-        setIsLoggedIn(true)
-        axios
-          .get(`http://localhost:3000/api/user/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
-          })
-          .then(response => {
-            setUsername(response.data.namaLengkap)
-          })
-      }
-    }
-
-    window.addEventListener('userLoggedIn', handleLoginEvent)
-
-    return () => {
-      window.removeEventListener('userLoggedIn', handleLoginEvent)
-    }
-  }, [])
+    getUser(id)
+  }, [id])
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -123,7 +105,7 @@ const NavbarComponent = () => {
               </NavDropdown.Item>
               <NavDropdown.Item
                 as={NavLink}
-                to='/layanan/Penerbitan Bukti Penerimaan Negara'
+                to='layanan/Penerbitan Bukti Penerimaan Negara'
               >
                 Penerbitan Bukti Penerimaan Negara
               </NavDropdown.Item>
@@ -178,18 +160,6 @@ const NavbarComponent = () => {
               </NavDropdown.Item>
             </NavDropdown>
 
-            {/* <NavDropdown title="Monitoring" id="navbarDropdown">
-              <NavDropdown.Item as={NavLink} to="/monitoring/Penyelesaian Retur Atas SP2D">Penyelesaian Retur Atas SP2D</NavDropdown.Item>
-              <NavDropdown.Item as={NavLink} to="/monitoring/Penerbitan Nota Konfirmasi Atas Penerimaan Negara">Penerbitan Nota Konfirmasi Atas Penerimaan Negara</NavDropdown.Item>
-              <NavDropdown.Item as={NavLink} to="/monitoring/Koreksi Penerimaan Negara Atas Setoran Satuan Kerja">Koreksi Penerimaan Negara Atas Setoran Satuan Kerja</NavDropdown.Item>
-              <NavDropdown.Item as={NavLink} to="/monitoring/Permohonan VOID SP2D">Permohonan VOID SP2D</NavDropdown.Item>
-              <NavDropdown.Item as={NavLink} to="/monitoring/Penerbitan Surat Persetujuan / Penolakan Pembukaan Rekening Satker">Penerbitan Surat Persetujuan / Penolakan Pembukaan Rekening Satker</NavDropdown.Item>
-              <NavDropdown.Item as={NavLink} to="/monitoring/Laporan Pembukaan / Penutupan Rekening">Laporan Pembukaan / Penutupan Rekening</NavDropdown.Item>
-              <NavDropdown.Item as={NavLink} to="/monitoring/Pengembalian PFK">Pengembalian PFK</NavDropdown.Item>
-              <NavDropdown.Item as={NavLink} to="/monitoring/Penerbitan Bukti Penerimaan Negara">Penerbitan Bukti Penerimaan Negara</NavDropdown.Item>
-              <NavDropdown.Item as={NavLink} to="/monitoring/Pengembalian PNBP">Pengembalian PNBP</NavDropdown.Item>
-            </NavDropdown> */}
-
             <NavLink
               to='/monitoring'
               className='nav-link text-gray-600 hover:text-blue-500'
@@ -204,7 +174,7 @@ const NavbarComponent = () => {
                 <div className='d-flex align-items-center gap-2'>
                   <FaUser size={20} />
                   <span className='fw-semibold text-muted'>
-                    {username || '...'}
+                    {username.namaLengkap}
                   </span>
                 </div>
                 <button
