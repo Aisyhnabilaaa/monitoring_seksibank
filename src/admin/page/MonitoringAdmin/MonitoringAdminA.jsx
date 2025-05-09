@@ -17,6 +17,7 @@ const MonitoringAdminA = () => {
         }
       })
       .then(response => {
+        console.log('Data diterima:', response.data)
         setData(response.data)
       })
       .catch(error => {
@@ -149,57 +150,60 @@ const MonitoringAdminA = () => {
                 </td>
               </tr>
             ) : (
-              data.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.returSp2d.kodeSatker || '-'}</td>
-                  <td>{item.returSp2d.noTelpon || '-'}</td>
-                  <td>{item.returSp2d.alasanRetur || '-'}</td>
-                  <td>{item.returSp2d.alasanLainnya || '-'}</td>
-                  <td>
-                    {item.returSp2d.unggah_dokumen ? (
-                      <a
-                        href={`http://localhost:3000/uploads/${item.returSp2d.unggah_dokumen}`}
-                        target='_blank'
-                        rel='noopener noreferrer'
+              data.map((item, index) => {
+                console.log('URL Dokumen:', item.returSp2d.unggah_dokumen) // Tambahkan di sini
+                return (
+                  <tr key={index}>
+                    <td>{item.returSp2d.kodeSatker || '-'}</td>
+                    <td>{item.returSp2d.noTelpon || '-'}</td>
+                    <td>{item.returSp2d.alasanRetur || '-'}</td>
+                    <td>{item.returSp2d.alasanLainnya || '-'}</td>
+                    <td>
+                      {item.returSp2d.unggah_dokumen ? (
+                        <a
+                          href={item.returSp2d.unggah_dokumen}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                        >
+                          Lihat Dokumen
+                        </a>
+                      ) : (
+                        '-'
+                      )}
+                    </td>
+                    <td>
+                      <Form.Select
+                        value={item.status || 'DIPROSES'}
+                        onChange={e =>
+                          handleStatusChange(item.id, e.target.value)
+                        }
                       >
-                        Lihat Dokumen
-                      </a>
-                    ) : (
-                      '-'
-                    )}
-                  </td>
-                  <td>
-                    <Form.Select
-                      value={item.status || 'DIPROSES'}
-                      onChange={e =>
-                        handleStatusChange(item.id, e.target.value)
-                      }
-                    >
-                      <option value='DIPROSES'>Diproses</option>
-                      <option value='SELESAI'>Selesai</option>
-                      <option value='DITOLAK'>Ditolak</option>
-                    </Form.Select>
-                  </td>
-                  <td>
-                    <Form.Control
-                      as='textarea'
-                      rows={3}
-                      value={item.catatan || ''}
-                      onChange={e =>
-                        handleCatatanChange(item.id, e.target.value)
-                      }
-                    />
-                  </td>
-                  <td>
-                    <button
-                      className='btn btn-danger btn-sm'
-                      onClick={() => handleDelete(item.id)}
-                    >
-                      Hapus
-                    </button>
-                  </td>
-                </tr>
-              ))
+                        <option value='DIPROSES'>Diproses</option>
+                        <option value='SELESAI'>Selesai</option>
+                        <option value='DITOLAK'>Ditolak</option>
+                      </Form.Select>
+                    </td>
+                    <td>
+                      <Form.Control
+                        as='textarea'
+                        rows={3}
+                        value={item.catatan || ''}
+                        onChange={e =>
+                          handleCatatanChange(item.id, e.target.value)
+                        }
+                      />
+                    </td>
+                    <td>
+                      <button
+                        className='btn btn-danger btn-sm'
+                        onClick={() => handleDelete(item.id)}
+                      >
+                        Hapus
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })
             )}
           </tbody>
         </Table>

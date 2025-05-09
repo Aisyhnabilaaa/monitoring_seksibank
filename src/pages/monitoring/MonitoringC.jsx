@@ -97,7 +97,7 @@ const MonitoringC = () => {
                   <td>
                     {item.koreksiPenerimaan?.unggahDokumen ? (
                       <a
-                        href={`http://localhost:3000/uploads/${item.koreksiPenerimaan.unggahDokumen}`}
+                        href={item.koreksiPenerimaan?.unggahDokumen}
                         target='_blank'
                         rel='noopener noreferrer'
                       >

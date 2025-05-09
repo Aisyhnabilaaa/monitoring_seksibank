@@ -148,7 +148,7 @@ const MonitoringAdminG = () => {
                   <td>
                     {item.pengembalianPfk.unggahDokumen ? (
                       <a
-                        href={`http://localhost:3000/uploads/${item.pengembalianPfk.unggahDokumen}`}
+                        href={item.pengembalianPfk.unggahDokumen}
                         target='_blank'
                         rel='noopener noreferrer'
                       >

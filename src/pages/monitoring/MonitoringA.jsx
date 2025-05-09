@@ -96,7 +96,7 @@ const MonitoringA = () => {
                   <td>
                     {item.returSp2d.unggah_dokumen ? (
                       <a
-                        href={`http://localhost:3000/uploads/${item.returSp2d.unggah_dokumen}`}
+                        href={item.returSp2d.unggah_dokumen}
                         target='_blank'
                         rel='noopener noreferrer'
                       >

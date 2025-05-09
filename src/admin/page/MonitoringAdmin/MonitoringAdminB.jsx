@@ -148,7 +148,7 @@ const MonitoringAdminB = () => {
                   <td>
                     {item.penerbitanNota.unggahDokumen ? (
                       <a
-                        href={`http://localhost:3000/uploads/${item.penerbitanNota.unggahDokumen}`}
+                        href={item.penerbitanNota.unggahDokumen}
                         target='_blank'
                         rel='noopener noreferrer'
                       >

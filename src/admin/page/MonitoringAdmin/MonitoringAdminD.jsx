@@ -148,7 +148,7 @@ const MonitoringAdminD = () => {
                   <td>
                     {item.pengajuanVoid.unggahDokumen ? (
                       <a
-                        href={`http://localhost:3000/uploads/${item.pengajuanVoid.unggahDokumen}`}
+                        href={item.pengajuanVoid.unggahDokumen}
                         target='_blank'
                         rel='noopener noreferrer'
                       >

@@ -148,7 +148,7 @@ const MonitoringAdminI = () => {
                   <td>
                     {item.pengembalianPnbp.unggahDokumen ? (
                       <a
-                        href={`http://localhost:3000/uploads/${item.pengembalianPnbp.unggahDokumen}`}
+                        href={item.pengembalianPnbp.unggahDokumen}
                         target='_blank'
                         rel='noopener noreferrer'
                       >

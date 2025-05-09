@@ -161,15 +161,39 @@ function App () {
       <Route path='/admin' element={<AdminLayout />}>
         <Route index element={<BerandaAdmin />} />
         <Route path='/admin/notifikasi' element={<NotifikasiPage />} />
-        <Route path='monitoring/a' element={<MonitoringAdminA />} />
-        <Route path='monitoring/b' element={<MonitoringAdminB />} />
-        <Route path='monitoring/c' element={<MonitoringAdminC />} />
-        <Route path='monitoring/d' element={<MonitoringAdminD />} />
-        <Route path='monitoring/e' element={<MonitoringAdminE />} />
-        <Route path='monitoring/f' element={<MonitoringAdminF />} />
-        <Route path='monitoring/g' element={<MonitoringAdminG />} />
-        <Route path='monitoring/h' element={<MonitoringAdminH />} />
-        <Route path='monitoring/i' element={<MonitoringAdminI />} />
+        <Route
+          path='monitoring/Penyelesaian Retur atas SP2D'
+          element={<MonitoringAdminA />}
+        />
+        <Route
+          path='monitoring/Pengajuan Penerbitan Nota Konfirmasi atas Penerimaan Negara'
+          element={<MonitoringAdminB />}
+        />
+        <Route
+          path='monitoring/Koreksi Penerimaan Negara Atas Setoran Satuan Kerja'
+          element={<MonitoringAdminC />}
+        />
+        <Route path='monitoring/Void SP2D' element={<MonitoringAdminD />} />
+        <Route
+          path='monitoring/Pengajuan Persetujuan Pembukaan Rekening'
+          element={<MonitoringAdminE />}
+        />
+        <Route
+          path='monitoring/Permohonan Persetujuan Pembukaan Rekening Satker'
+          element={<MonitoringAdminF />}
+        />
+        <Route
+          path='monitoring/Pengembalian PFK'
+          element={<MonitoringAdminG />}
+        />
+        <Route
+          path='monitoring/Penerbitan Bukti Penerimaan Negara'
+          element={<MonitoringAdminH />}
+        />
+        <Route
+          path='monitoring/Pengembalian PNBP'
+          element={<MonitoringAdminI />}
+        />
       </Route>
     </Routes>
   )

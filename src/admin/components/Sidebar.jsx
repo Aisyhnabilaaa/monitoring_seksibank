@@ -104,14 +104,24 @@ const Sidebar = () => {
               </div>
               <i
                 className={`bi bi-chevron-${
-                  isMonitoringOpen ? 'up' : 'down'
+                  isMonitoringOpen ? 'down' : 'up'
                 } sidebar-arrow`}
               ></i>
             </button>
 
             {isMonitoringOpen && (
               <ul className='sidebar-submenu'>
-                {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'].map(item => (
+                {[
+                  'Penyelesaian Retur atas SP2D',
+                  'Pengajuan Penerbitan Nota Konfirmasi atas Penerimaan Negara',
+                  'Koreksi Penerimaan Negara Atas Setoran Satuan Kerja',
+                  'Void SP2D',
+                  'Pengajuan Persetujuan Pembukaan Rekening',
+                  'Permohonan Persetujuan Pembukaan Rekening Satker',
+                  'Pengembalian PFK',
+                  'Penerbitan Bukti Penerimaan Negara',
+                  'Pengembalian PNBP'
+                ].map(item => (
                   <li key={item}>
                     <Link
                       to={`/admin/monitoring/${item.toLowerCase()}`}

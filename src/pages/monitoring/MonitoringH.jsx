@@ -96,7 +96,7 @@ const MonitoringH = () => {
                   <td>
                     {item.penerbitanBukti.unggah_dokumen ? (
                       <a
-                        href={`http://localhost:3000/uploads/${item.penerbitanBukti.unggah_dokumen}`}
+                        href={item.penerbitanBukti.unggah_dokumen}
                         target='_blank'
                         rel='noopener noreferrer'
                       >
