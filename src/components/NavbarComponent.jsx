@@ -167,7 +167,6 @@ const NavbarComponent = () => {
               Monitoring
             </NavLink>
           </Nav>
-
           <div className='d-flex gap-4 align-items-center'>
             {isLoggedIn ? (
               <>

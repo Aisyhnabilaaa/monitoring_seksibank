@@ -7,35 +7,41 @@ const MonitoringPage = () => {
   const navigate = useNavigate()
 
   const layananList = [
-    { label: 'Penyelesaian Retur atas SP2D', path: '/admin/monitoring/a' },
+    {
+      label: 'Penyelesaian Retur atas SP2D',
+      path: '/admin/monitoring/Penyelesaian Retur atas SP2D'
+    },
     {
       label: 'Penerbitan Nota Konfirmasi Atas Penerimaan Negara',
-      path: '/admin/monitoring/b'
+      path: '/admin/monitoring/Pengajuan Penerbitan Nota Konfirmasi atas Penerimaan Negara'
     },
     {
       label: 'Koreksi Penerimaan Negara Atas Setoran Satuan Kerja',
-      path: '/admin/monitoring/c'
+      path: '/admin/monitoring/Koreksi Penerimaan Negara Atas Setoran Satuan Kerja'
     },
-    { label: 'Permohonan VOID SP2D', path: '/admin/monitoring/d' },
+    {
+      label: 'Permohonan VOID SP2D',
+      path: '/admin/monitoring/Void SP2D'
+    },
     {
       label:
         'Penerbitan Surat Persetujuan / Penolakan Pembukaan Rekening Satker',
-      path: '/admin/monitoring/e'
+      path: '/admin/monitoring/Permohonan Persetujuan Pembukaan Rekening Satker'
     },
     {
       label: 'Laporan Pembukaan / Penutupan Rekening',
-      path: '/admin/monitoring/f'
+      path: '/admin/monitoring/Laporan Pembukaan / Penutupan Rekening'
     },
-    { label: 'Pengembalian PFK', path: '/admin/monitoring/g' },
+    { label: 'Pengembalian PFK', path: '/admin/monitoring/Pengembalian PFK' },
     {
       label: 'Penerbitan Bukti Penerimaan Negara',
-      path: '/admin/monitoring/h'
+      path: '/admin/monitoring/Penerbitan Bukti Penerimaan Negara'
     },
-    { label: 'Pengembalian PNBP', path: '/admin/monitoring/i' }
+    { label: 'Pengembalian PNBP', path: '/admin/monitoring/Pengembalian PNBP' }
   ]
 
   return (
-    <div className='mt-5'>
+    <div>
       <Container ref={daftarLayananRef} className='py-5'>
         <Row className='text-center mb-5'>
           <Col>

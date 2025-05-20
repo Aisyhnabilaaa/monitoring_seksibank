@@ -8,7 +8,7 @@ const MonitoringAdminC = () => {
   const [loading, setLoading] = useState(true)
 
   const fetchData = () => {
-    const token = localStorage.getItem('token') // ambil token
+    const token = localStorage.getItem('token')
     axios
       .get('http://localhost:3000/api/monitoringKoreksi/', {
         headers: {
@@ -95,8 +95,6 @@ const MonitoringAdminC = () => {
           Authorization: `Bearer ${token}`
         }
       })
-
-      // Hapus data dari state
       setData(prevData => prevData.filter(item => item.id !== id))
 
       Swal.fire({

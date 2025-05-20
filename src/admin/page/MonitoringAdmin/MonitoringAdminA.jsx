@@ -8,7 +8,7 @@ const MonitoringAdminA = () => {
   const [loading, setLoading] = useState(true)
 
   const fetchData = () => {
-    const token = localStorage.getItem('token') // ambil token
+    const token = localStorage.getItem('token')
     axios
     axios
       .get('http://localhost:3000/api/monitoringRetur/', {
@@ -46,8 +46,6 @@ const MonitoringAdminA = () => {
           }
         }
       )
-
-      // Update status secara langsung pada data yang ada di state
       setData(prevData =>
         prevData.map(item =>
           item.id === id ? { ...item, status: newStatus } : item
@@ -78,8 +76,6 @@ const MonitoringAdminA = () => {
           Authorization: `Bearer ${token}`
         }
       })
-
-      // Hapus data dari state
       setData(prevData => prevData.filter(item => item.id !== id))
 
       Swal.fire({
@@ -106,8 +102,6 @@ const MonitoringAdminA = () => {
           }
         }
       )
-
-      // Update catatan secara langsung pada data yang ada di state
       setData(prevData =>
         prevData.map(item =>
           item.id === id ? { ...item, catatan: newCatatan } : item
@@ -151,7 +145,7 @@ const MonitoringAdminA = () => {
               </tr>
             ) : (
               data.map((item, index) => {
-                console.log('URL Dokumen:', item.returSp2d.unggah_dokumen) // Tambahkan di sini
+                console.log('URL Dokumen:', item.returSp2d.unggah_dokumen)
                 return (
                   <tr key={index}>
                     <td>{item.returSp2d.kodeSatker || '-'}</td>

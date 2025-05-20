@@ -41,6 +41,7 @@ import MonitoringF from './pages/monitoring/MonitoringF'
 import MonitoringG from './pages/monitoring/MonitoringG'
 import MonitoringH from './pages/monitoring/MonitoringH'
 import MonitoringI from './pages/monitoring/MonitoringI'
+import NotifikasiUserPage from './pages/monitoring/NotifikasiUser'
 
 import MonitoringAdminA from './admin/page/MonitoringAdmin/MonitoringAdminA'
 import MonitoringAdminB from './admin/page/MonitoringAdmin/MonitoringAdminB'
@@ -62,6 +63,7 @@ function App () {
         <Route path='monitoring' element={<Monitoring />} />
         <Route path='layanan' element={<LayananPage />} />
         <Route path='dokumen' element={<Dokumen />} />
+        <Route path='/notifikasi' element={<NotifikasiUserPage />} />
 
         {/* Layanan Routes */}
         <Route

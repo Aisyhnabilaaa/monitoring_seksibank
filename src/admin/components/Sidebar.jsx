@@ -1,23 +1,22 @@
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import axios from 'axios' // Pakai axios untuk request API
+import axios from 'axios'
 
 const Sidebar = () => {
   const [isMonitoringOpen, setMonitoringOpen] = useState(false)
   const [isUserMenuOpen, setUserMenuOpen] = useState(false)
-  const [username, setUsername] = useState('') // Buat state username
-  const [notifCount, setNotifCount] = useState(0) // State untuk jumlah notifikasi
+  const [username, setUsername] = useState('')
+  const [notifCount, setNotifCount] = useState(0)
 
   const navigate = useNavigate()
 
   useEffect(() => {
-    // Fungsi fetch data user
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem('admin_token')
         const id = localStorage.getItem('id')
-        console.log('User ID:', id) // Periksa nilai ID
+        console.log('User ID:', id)
 
         const response = await axios.get(
           `http://localhost:3000/api/user/${id}`,
@@ -38,14 +37,12 @@ const Sidebar = () => {
   }, [])
 
   useEffect(() => {
-    // Fetch jumlah notifikasi
     const fetchNotif = async () => {
       try {
         const id = localStorage.getItem('id')
         const response = await axios.get(
           `http://localhost:3000/notifikasi/${id}`
         )
-        // Misal field status = 'false' untuk unread
         const unreadNotif = response.data.filter(n => n.status === 'unread')
         setNotifCount(unreadNotif.length)
       } catch (error) {

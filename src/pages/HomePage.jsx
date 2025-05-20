@@ -66,7 +66,7 @@ const HomePage = () => {
             {/* Card 1 */}
             <Col xs={12} md={4} className=' d-flex justify-content-center'>
               <Card
-                className='layanan-card text-center p-4'
+                className='layanan-card text-center p-3'
                 onClick={scrollToDaftarLayanan}
                 style={{ cursor: 'pointer' }}
               >

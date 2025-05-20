@@ -8,7 +8,7 @@ const MonitoringAdminB = () => {
   const [loading, setLoading] = useState(true)
 
   const fetchData = () => {
-    const token = localStorage.getItem('token') // ambil token
+    const token = localStorage.getItem('token')
     axios
       .get('http://localhost:3000/api/monitoringNota/', {
         headers: {

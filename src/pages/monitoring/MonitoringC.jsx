@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Container, Table, Spinner, Form, Button } from 'react-bootstrap'
 import axios from 'axios'
+import NavbarComponent from '../../components/NavbarComponent'
 
 const MonitoringC = () => {
   const [data, setData] = useState([])
@@ -59,86 +60,88 @@ const MonitoringC = () => {
   }
 
   return (
-    <Container className='mt-5 p-5'>
-      <h2 className='text-center mb-4'>Monitoring Koreksi Penerimaan</h2>
-
-      <div className='table-responsive'>
-        <Table bordered hover>
-          <thead className='table-light'>
-            <tr>
-              <th>Kode Satker</th>
-              <th>Nomor Telepon</th>
-              <th>Tahun Setoran</th>
-              <th>Dokumen</th>
-              <th>Status</th>
-              <th>catatan</th>
-              <th>Upload Ulang</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
+    <div>
+      <NavbarComponent />
+      <Container className='mt-5 p-5'>
+        <h2 className='text-center mb-4'>Monitoring Koreksi Penerimaan</h2>
+        <div className='table-responsive'>
+          <Table bordered hover>
+            <thead className='table-light'>
               <tr>
-                <td colSpan='5' className='text-center'>
-                  <Spinner animation='border' variant='primary' />
-                </td>
+                <th>Kode Satker</th>
+                <th>Nomor Telepon</th>
+                <th>Tahun Setoran</th>
+                <th>Dokumen</th>
+                <th>Status</th>
+                <th>catatan</th>
+                <th>Upload Ulang</th>
               </tr>
-            ) : data.length === 0 ? (
-              <tr>
-                <td colSpan='5' className='text-center text-muted'>
-                  Tidak ada data tersedia
-                </td>
-              </tr>
-            ) : (
-              data.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.koreksiPenerimaan.kodeSatker || '-'}</td>
-                  <td>{item.koreksiPenerimaan.noTelpon || '-'}</td>
-                  <td>{item.koreksiPenerimaan.tahunSetoran || '-'}</td>
-                  <td>
-                    {item.koreksiPenerimaan?.unggahDokumen ? (
-                      <a
-                        href={item.koreksiPenerimaan?.unggahDokumen}
-                        target='_blank'
-                        rel='noopener noreferrer'
-                      >
-                        Lihat Dokumen
-                      </a>
-                    ) : (
-                      '-'
-                    )}
-                  </td>
-                  <td>
-                    <span>{item.status || 'DIPROSES'}</span>
-                  </td>
-                  <td>{item.catatan || '-'}</td>
-                  <td>
-                    {item.status === 'DITOLAK' && (
-                      <div>
-                        <Form.Control
-                          type='file'
-                          accept='.pdf,.jpg,.png'
-                          onChange={e =>
-                            handleFileChange(item.id, e.target.files[0])
-                          }
-                        />
-                        <Button
-                          className='mt-2'
-                          size='sm'
-                          variant='primary'
-                          onClick={() => handleUpload(item.id)}
-                        >
-                          Upload Ulang
-                        </Button>
-                      </div>
-                    )}
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan='5' className='text-center'>
+                    <Spinner animation='border' variant='primary' />
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </Table>
-      </div>
-    </Container>
+              ) : data.length === 0 ? (
+                <tr>
+                  <td colSpan='5' className='text-center text-muted'>
+                    Tidak ada data tersedia
+                  </td>
+                </tr>
+              ) : (
+                data.map((item, index) => (
+                  <tr key={index}>
+                    <td>{item.koreksiPenerimaan.kodeSatker || '-'}</td>
+                    <td>{item.koreksiPenerimaan.noTelpon || '-'}</td>
+                    <td>{item.koreksiPenerimaan.tahunSetoran || '-'}</td>
+                    <td>
+                      {item.koreksiPenerimaan?.unggahDokumen ? (
+                        <a
+                          href={item.koreksiPenerimaan?.unggahDokumen}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                        >
+                          Lihat Dokumen
+                        </a>
+                      ) : (
+                        '-'
+                      )}
+                    </td>
+                    <td>
+                      <span>{item.status || 'DIPROSES'}</span>
+                    </td>
+                    <td>{item.catatan || '-'}</td>
+                    <td>
+                      {item.status === 'DITOLAK' && (
+                        <div>
+                          <Form.Control
+                            type='file'
+                            accept='.pdf,.jpg,.png'
+                            onChange={e =>
+                              handleFileChange(item.id, e.target.files[0])
+                            }
+                          />
+                          <Button
+                            className='mt-2'
+                            size='sm'
+                            variant='primary'
+                            onClick={() => handleUpload(item.id)}
+                          >
+                            Upload Ulang
+                          </Button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </Table>
+        </div>
+      </Container>
+    </div>
   )
 }
 
