@@ -93,6 +93,7 @@ const MonitoringH = () => {
                 <th>Dokumen</th>
                 <th>Status</th>
                 <th>Catatan</th>
+                <th>Upload Ulang</th>
               </tr>
             </thead>
             <tbody>
