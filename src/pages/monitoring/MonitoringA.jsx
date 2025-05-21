@@ -7,6 +7,7 @@ const MonitoringA = () => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [fileInputs, setFileInputs] = useState({})
+  const [searchTerm, setSearchTerm] = useState('') // 👉 State untuk pencarian
 
   const fetchData = () => {
     axios
@@ -44,11 +45,10 @@ const MonitoringA = () => {
       await axios.patch(`http://localhost:3000/api/retur/${id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('token')}` // Menambahkan token
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       })
 
-      // Fetch data lagi setelah berhasil upload
       fetchData()
       alert('Upload berhasil!')
     } catch (error) {
@@ -57,11 +57,30 @@ const MonitoringA = () => {
     }
   }
 
+  // 👉 Filter data berdasarkan searchTerm
+  const filteredData = data.filter(item =>
+    item.returSp2d?.kodeSatker?.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
   return (
-    <diV>
+    <div>
       <NavbarComponent />
       <Container className='mt-5 p-5'>
         <h2 className='text-center mb-4'>Monitoring Penyelesaian Retur SP2D</h2>
+        <div className='cariKode'>
+          {/* 👉 Input search */}
+          <Form.Group className='mb-3'>
+            <Form.Label>Cari Kode Satker</Form.Label>
+            <Form.Control
+              type='text'
+              placeholder='Masukkan kode satker...'
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{ border: '2px solid #000000', borderRadius: '5px' }}
+            />
+          </Form.Group>
+        </div>
+
         <div className='table-responsive'>
           <Table bordered hover>
             <thead className='table-light'>
@@ -79,18 +98,18 @@ const MonitoringA = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan='7' className='text-center'>
+                  <td colSpan='8' className='text-center'>
                     <Spinner animation='border' variant='primary' />
                   </td>
                 </tr>
-              ) : data.length === 0 ? (
+              ) : filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan='7' className='text-center text-muted'>
+                  <td colSpan='8' className='text-center text-muted'>
                     Tidak ada data tersedia
                   </td>
                 </tr>
               ) : (
-                data.map((item, index) => (
+                filteredData.map((item, index) => (
                   <tr key={item.returSp2d?.id || index}>
                     <td>{item.returSp2d.kodeSatker || '-'}</td>
                     <td>{item.returSp2d.noTelpon || '-'}</td>
@@ -141,7 +160,7 @@ const MonitoringA = () => {
           </Table>
         </div>
       </Container>
-    </diV>
+    </div>
   )
 }
 

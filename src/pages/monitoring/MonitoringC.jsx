@@ -7,6 +7,7 @@ const MonitoringC = () => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [fileInputs, setFileInputs] = useState({})
+  const [searchTerm, setSearchTerm] = useState('') // 👉 State untuk pencarian
   const fetchData = () => {
     axios
       .get('http://localhost:3000/api/monitoringKoreksi/')
@@ -59,11 +60,32 @@ const MonitoringC = () => {
     }
   }
 
+  // 👉 Filter data berdasarkan searchTerm
+  const filteredData = data.filter(item =>
+    item.koreksiPenerimaan?.kodeSatker
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  )
+
   return (
     <div>
       <NavbarComponent />
       <Container className='mt-5 p-5'>
         <h2 className='text-center mb-4'>Monitoring Koreksi Penerimaan</h2>
+
+        <div className='cariKode'>
+          {/* 👉 Input search */}
+          <Form.Group className='mb-3'>
+            <Form.Label>Cari Kode Satker</Form.Label>
+            <Form.Control
+              type='text'
+              placeholder='Masukkan kode satker...'
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{ border: '2px solid #000000', borderRadius: '5px' }}
+            />
+          </Form.Group>
+        </div>
         <div className='table-responsive'>
           <Table bordered hover>
             <thead className='table-light'>
@@ -91,7 +113,7 @@ const MonitoringC = () => {
                   </td>
                 </tr>
               ) : (
-                data.map((item, index) => (
+                filteredData.map((item, index) => (
                   <tr key={index}>
                     <td>{item.koreksiPenerimaan.kodeSatker || '-'}</td>
                     <td>{item.koreksiPenerimaan.noTelpon || '-'}</td>

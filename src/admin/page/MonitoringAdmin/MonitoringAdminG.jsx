@@ -6,7 +6,7 @@ import Swal from 'sweetalert2'
 const MonitoringAdminG = () => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
-
+  const [searchTerm, setSearchTerm] = useState('')
   const fetchData = () => {
     const token = localStorage.getItem('token')
     axios
@@ -108,11 +108,27 @@ const MonitoringAdminG = () => {
       alert(error.response?.data?.message || 'Gagal menghapus data')
     }
   }
-
+  const filteredData = data.filter(item =>
+    item.pengembalianPfk?.kodeSatker
+      ?.toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  )
   return (
     <Container className='mt-5 p-5'>
       <h2 className='text-center mb-4'>Monitoring Pengembalian PFK</h2>
-
+      <div className='cariKode'>
+        {/* 👉 Input search */}
+        <Form.Group className='mb-3'>
+          <Form.Label>Cari Kode Satker</Form.Label>
+          <Form.Control
+            type='text'
+            placeholder='Masukkan kode satker...'
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ border: '2px solid #000000', borderRadius: '5px' }}
+          />
+        </Form.Group>
+      </div>
       <div className='table-responsive'>
         <Table bordered hover>
           <thead className='table-light'>
@@ -140,7 +156,7 @@ const MonitoringAdminG = () => {
                 </td>
               </tr>
             ) : (
-              data.map((item, index) => (
+              filteredData.map((item, index) => (
                 <tr key={index}>
                   <td>{item.pengembalianPfk.pihakMengajukan || '-'}</td>
                   <td>{item.pengembalianPfk.kodeSatker || '-'}</td>
