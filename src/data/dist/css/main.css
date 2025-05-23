@@ -1,4 +1,4 @@
-src/data/dist/css/main.css
+/* src/data/dist/css/main.css */
 /* @import "remixicon/fonts/remixicon.css"; */
 
 * {
@@ -59,7 +59,7 @@ body {
 .header {
   position: relative;
   /* Pastikan elemen memiliki posisi yang bisa diatur */
-  background: url('src/assets/img/walldepan.png');
+  background: url('/walldepan.png');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;

@@ -6,7 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': 'http://localhost:3000',
-    },
+      '/api': 'http://localhost:3000'
+    }
   },
+  build: {
+    chunkSizeWarningLimit: 1000 // menambah batas ukuran chunk jadi 1000kB
+  }
 })
