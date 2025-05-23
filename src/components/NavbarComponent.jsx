@@ -18,7 +18,7 @@ const NavbarComponent = () => {
   const getUser = async id => {
     try {
       const response = await axios.get(
-        `http://layananbank-production.up.railway.app/api/user/${id}`,
+        `https://layananbank-production.up.railway.app/api/user/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
