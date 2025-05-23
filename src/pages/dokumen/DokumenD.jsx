@@ -53,7 +53,7 @@ const DokumenD = () => {
         throw new Error('Token tidak ditemukan. Silakan login kembali.')
 
       const response = await fetch(
-        'http://layananbank-production.up.railway.app/api/pengajuanVoid/create',
+        'https://layananbank-production.up.railway.app/api/pengajuanVoid/create',
         {
           method: 'POST',
           headers: {

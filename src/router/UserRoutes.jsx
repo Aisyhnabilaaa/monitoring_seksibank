@@ -1,9 +1,7 @@
-import React from 'react'
+// import React from 'react'
 
 const UserRoutes = () => {
-  return (
-    <div>UserRoutes</div>
-  )
+  return <div>UserRoutes</div>
 }
 
 export default UserRoutes

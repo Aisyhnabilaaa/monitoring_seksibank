@@ -19,7 +19,7 @@ const Login = () => {
     e.preventDefault()
     try {
       const res = await axios.post(
-        'http://layananbank-production.up.railway.app/api/auth/login',
+        'https://layananbank-production.up.railway.app/api/auth/login',
         form
       )
       const token = res.data.data.token

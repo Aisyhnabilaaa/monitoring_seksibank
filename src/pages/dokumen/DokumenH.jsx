@@ -66,7 +66,7 @@ const DokumenH = () => {
       const token = localStorage.getItem('token') // Pastikan token disimpan saat login
 
       const response = await axios.post(
-        'http://layananbank-production.up.railway.app/api/penerbitanBukti/create',
+        'https://layananbank-production.up.railway.app/api/penerbitanBukti/create',
         formData,
         {
           headers: {

@@ -77,13 +77,16 @@ const DokumenB = () => {
         unggah: values.unggah
       })
 
-      const response = await fetch('http://layananbank-production.up.railway.app/api/nota/create', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-        body: formData
-      })
+      const response = await fetch(
+        'https://layananbank-production.up.railway.app/api/nota/create',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`
+          },
+          body: formData
+        }
+      )
 
       const result = await response.json()
 

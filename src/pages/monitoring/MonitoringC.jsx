@@ -11,7 +11,7 @@ const MonitoringC = () => {
   const fetchData = () => {
     axios
       .get(
-        'http://layananbank-production.up.railway.app/api/monitoringKoreksi/'
+        'https://layananbank-production.up.railway.app/api/monitoringKoreksi/'
       )
       .then(response => {
         console.log(response.data) // Tambahkan log ini
@@ -45,7 +45,7 @@ const MonitoringC = () => {
 
     try {
       await axios.patch(
-        `http://layananbank-production.up.railway.app/api/koreksiPenerimaan/${id}`,
+        `https://layananbank-production.up.railway.app/api/koreksiPenerimaan/${id}`,
         formData,
         {
           headers: {

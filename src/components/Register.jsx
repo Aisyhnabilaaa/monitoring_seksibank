@@ -21,7 +21,7 @@ const Register = () => {
     e.preventDefault()
     try {
       const response = await axios.post(
-        'http://layananbank-production.up.railway.app/api/auth/register',
+        'https://layananbank-production.up.railway.app/api/auth/register',
         form
       )
       console.log('Register success:', response.data)

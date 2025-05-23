@@ -13,7 +13,7 @@ const MonitoringAdminA = () => {
     axios
     axios
       .get(
-        'http://layananbank-production.up.railway.app/api/monitoringRetur/',
+        'https://layananbank-production.up.railway.app/api/monitoringRetur/',
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -40,7 +40,7 @@ const MonitoringAdminA = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `http://layananbank-production.up.railway.app/api/monitoringRetur/${id}`,
+        `https://layananbank-production.up.railway.app/api/monitoringRetur/${id}`,
         {
           status: newStatus
         },
@@ -76,7 +76,7 @@ const MonitoringAdminA = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.delete(
-        `http://layananbank-production.up.railway.app/api/monitoringRetur/${id}`,
+        `https://layananbank-production.up.railway.app/api/monitoringRetur/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -99,7 +99,7 @@ const MonitoringAdminA = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `http://layananbank-production.up.railway.app/api/monitoringRetur/${id}`,
+        `https://layananbank-production.up.railway.app/api/monitoringRetur/${id}`,
         {
           catatan: newCatatan
         },

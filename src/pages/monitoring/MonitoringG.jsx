@@ -10,7 +10,7 @@ const MonitoringG = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const fetchData = () => {
     axios
-      .get('http://localhost:3000/api/monitoringPfk/')
+      .get('https://localhost:3000/api/monitoringPfk/')
       .then(response => {
         setData(response.data)
       })
@@ -42,7 +42,7 @@ const MonitoringG = () => {
 
     try {
       await axios.patch(
-        `http://layananbank-production.up.railway.app/api/pengembalianPfk/${id}`,
+        `https://layananbank-production.up.railway.app/api/pengembalianPfk/${id}`,
         formData,
         {
           headers: {

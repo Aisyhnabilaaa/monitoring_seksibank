@@ -11,7 +11,7 @@ const NotifikasiUserPage = () => {
     const fetchNotifications = async () => {
       try {
         const res = await axios.get(
-          `http://layananbank-production.up.railway.app/api/notifikasi/${userId}`
+          `https://layananbank-production.up.railway.app/api/notifikasi/${userId}`
         )
         console.log('Data notifikasi:', res.data) // debugz`
         setNotifications(res.data)

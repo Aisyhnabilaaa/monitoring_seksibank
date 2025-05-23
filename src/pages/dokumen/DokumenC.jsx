@@ -78,7 +78,7 @@ const DokumenC = () => {
       })
 
       const response = await fetch(
-        'http://layananbank-production.up.railway.app/api/koreksiPenerimaan/create',
+        'https://layananbank-production.up.railway.app/api/koreksiPenerimaan/create',
         {
           method: 'POST',
           headers: {

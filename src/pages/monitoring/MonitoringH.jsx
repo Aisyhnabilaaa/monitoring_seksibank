@@ -11,7 +11,7 @@ const MonitoringH = () => {
   const fetchData = () => {
     axios
       .get(
-        'http://layananbank-production.up.railway.app/api/monitoringPenerbitanBukti/'
+        'https://layananbank-production.up.railway.app/api/monitoringPenerbitanBukti/'
       )
       .then(response => {
         setData(response.data)
@@ -44,7 +44,7 @@ const MonitoringH = () => {
 
     try {
       await axios.patch(
-        `http://layananbank-production.up.railway.app/api/penerbitanBukti/${id}`,
+        `https://layananbank-production.up.railway.app/api/penerbitanBukti/${id}`,
         formData,
         {
           headers: {
