@@ -11,7 +11,7 @@ const MonitoringA = () => {
 
   const fetchData = () => {
     axios
-      .get('http://localhost:3000/api/monitoringRetur/')
+      .get('http://layananbank-production.up.railway.app/api/monitoringRetur/')
       .then(response => {
         setData(response.data)
       })
@@ -42,12 +42,16 @@ const MonitoringA = () => {
     formData.append('unggah_dokumen', file)
 
     try {
-      await axios.patch(`http://localhost:3000/api/retur/${id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+      await axios.patch(
+        `http://layananbank-production.up.railway.app/api/retur/${id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
         }
-      })
+      )
 
       fetchData()
       alert('Upload berhasil!')

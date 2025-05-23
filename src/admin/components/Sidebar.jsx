@@ -19,7 +19,7 @@ const Sidebar = () => {
         console.log('User ID:', id)
 
         const response = await axios.get(
-          `http://localhost:3000/api/user/${id}`,
+          `http://layananbank-production.up.railway.app/api/user/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -41,7 +41,7 @@ const Sidebar = () => {
       try {
         const id = localStorage.getItem('id')
         const response = await axios.get(
-          `http://localhost:3000/api/notifikasi/${id}`
+          `http://layananbank-production.up.railway.app/api/notifikasi/${id}`
         )
         const unreadNotif = response.data.filter(n => n.status === 'unread')
         setNotifCount(unreadNotif.length)

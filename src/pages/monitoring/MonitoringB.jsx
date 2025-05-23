@@ -10,7 +10,7 @@ const MonitoringB = () => {
   const [searchTerm, setSearchTerm] = useState('') // 👉 State untuk pencarian
   const fetchData = () => {
     axios
-      .get('http://localhost:3000/api/monitoringNota/')
+      .get('http://layananbank-production.up.railway.app/api/monitoringNota/')
       .then(response => {
         setData(response.data)
       })
@@ -41,12 +41,16 @@ const MonitoringB = () => {
     formData.append('unggahDokumen', file)
 
     try {
-      await axios.patch(`http://localhost:3000/api/nota/${id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+      await axios.patch(
+        `http://layananbank-production.up.railway.app/api/nota/${id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          }
         }
-      })
+      )
       fetchData()
       alert('Upload Berhasil')
     } catch (error) {

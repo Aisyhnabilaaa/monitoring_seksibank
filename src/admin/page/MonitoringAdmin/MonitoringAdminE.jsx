@@ -11,11 +11,14 @@ const MonitoringAdminE = () => {
   const fetchData = () => {
     const token = localStorage.getItem('token')
     axios
-      .get('http://localhost:3000/api/monitoringPembukaanRekening/', {
-        headers: {
-          Authorization: `Bearer ${token}`
+      .get(
+        'http://layananbank-production.up.railway.app/api/monitoringPembukaanRekening/',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      })
+      )
       .then(response => {
         setData(response.data)
       })
@@ -35,7 +38,7 @@ const MonitoringAdminE = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `http://localhost:3000/api/monitoringPembukaanRekening/${id}`,
+        `http://layananbank-production.up.railway.app/api/monitoringPembukaanRekening/${id}`,
         { status: newStatus },
         {
           headers: {
@@ -57,7 +60,7 @@ const MonitoringAdminE = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `http://localhost:3000/api/monitoringPembukaanRekening/${id}`,
+        `http://layananbank-production.up.railway.app/api/monitoringPembukaanRekening/${id}`,
         { catatan: newCatatan },
         {
           headers: {
@@ -92,7 +95,7 @@ const MonitoringAdminE = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.delete(
-        `http://localhost:3000/api/monitoringPembukaanRekening/${id}`,
+        `http://layananbank-production.up.railway.app/api/monitoringPembukaanRekening/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -121,7 +124,7 @@ const MonitoringAdminE = () => {
   return (
     <Container className='mt-5 p-5'>
       <h2 className='text-center mb-4'>Monitoring Pembukaan Rekening</h2>
-<div className='cariKode'>
+      <div className='cariKode'>
         {/* Input search */}
         <Form.Group className='mb-3'>
           <Form.Label>Cari Kode Satker</Form.Label>

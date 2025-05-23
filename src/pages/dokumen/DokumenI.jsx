@@ -52,7 +52,7 @@ const DokumenI = () => {
       if (!token) throw new Error('Token tidak ditemukan.')
 
       const response = await fetch(
-        'http://localhost:3000/api/pengembalianPnbp/create',
+        'http://layananbank-production.up.railway.app/api/pengembalianPnbp/create',
         {
           method: 'POST',
           headers: {

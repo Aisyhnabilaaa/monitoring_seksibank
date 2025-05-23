@@ -10,7 +10,7 @@ const MonitoringAdminG = () => {
   const fetchData = () => {
     const token = localStorage.getItem('token')
     axios
-      .get('http://localhost:3000/api/monitoringPfk/', {
+      .get('http://layananbank-production.up.railway.app/api/monitoringPfk/', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -34,7 +34,7 @@ const MonitoringAdminG = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `http://localhost:3000/api/monitoringPfk/${id}`,
+        `http://layananbank-production.up.railway.app/api/monitoringPfk/${id}`,
         { status: newStatus },
         {
           headers: {
@@ -56,7 +56,7 @@ const MonitoringAdminG = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `http://localhost:3000/api/monitoringPfk/${id}`,
+        `http://layananbank-production.up.railway.app/api/monitoringPfk/${id}`,
         { catatan: newCatatan },
         {
           headers: {
@@ -90,11 +90,14 @@ const MonitoringAdminG = () => {
 
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`http://localhost:3000/api/monitoringPfk/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      await axios.delete(
+        `http://layananbank-production.up.railway.app/api/monitoringPfk/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      })
+      )
 
       // Hapus data dari state
       setData(prevData => prevData.filter(item => item.id !== id))
@@ -117,7 +120,7 @@ const MonitoringAdminG = () => {
     <Container className='mt-5 p-5'>
       <h2 className='text-center mb-4'>Monitoring Pengembalian PFK</h2>
       <div className='cariKode'>
-        {/* 👉 Input search */}
+        {/* Input search */}
         <Form.Group className='mb-3'>
           <Form.Label>Cari Kode Satker</Form.Label>
           <Form.Control

@@ -77,7 +77,7 @@ const DokumenB = () => {
         unggah: values.unggah
       })
 
-      const response = await fetch('http://localhost:3000/api/nota/create', {
+      const response = await fetch('http://layananbank-production.up.railway.app/api/nota/create', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`

@@ -18,7 +18,10 @@ const Login = () => {
   const handleSubmit = async e => {
     e.preventDefault()
     try {
-      const res = await axios.post('http://localhost:3000/api/auth/login', form)
+      const res = await axios.post(
+        'http://layananbank-production.up.railway.app/api/auth/login',
+        form
+      )
       const token = res.data.data.token
       const role = res.data.data.user.role
       const id = res.data.data.user.id

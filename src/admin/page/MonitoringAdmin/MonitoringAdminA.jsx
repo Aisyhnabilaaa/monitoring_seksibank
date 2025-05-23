@@ -12,11 +12,14 @@ const MonitoringAdminA = () => {
     const token = localStorage.getItem('token')
     axios
     axios
-      .get('http://localhost:3000/api/monitoringRetur/', {
-        headers: {
-          Authorization: `Bearer ${token}`
+      .get(
+        'http://layananbank-production.up.railway.app/api/monitoringRetur/',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      })
+      )
       .then(response => {
         console.log('Data diterima:', response.data)
         setData(response.data)
@@ -37,7 +40,7 @@ const MonitoringAdminA = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `http://localhost:3000/api/monitoringRetur/${id}`,
+        `http://layananbank-production.up.railway.app/api/monitoringRetur/${id}`,
         {
           status: newStatus
         },
@@ -72,11 +75,14 @@ const MonitoringAdminA = () => {
 
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`http://localhost:3000/api/monitoringRetur/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      await axios.delete(
+        `http://layananbank-production.up.railway.app/api/monitoringRetur/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      })
+      )
       setData(prevData => prevData.filter(item => item.id !== id))
 
       Swal.fire({
@@ -93,7 +99,7 @@ const MonitoringAdminA = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `http://localhost:3000/api/monitoringRetur/${id}`,
+        `http://layananbank-production.up.railway.app/api/monitoringRetur/${id}`,
         {
           catatan: newCatatan
         },

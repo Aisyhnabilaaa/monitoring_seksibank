@@ -17,11 +17,14 @@ const NavbarComponent = () => {
 
   const getUser = async id => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/user/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      const response = await axios.get(
+        `http://layananbank-production.up.railway.app/api/user/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      })
+      )
       const result = response.data
       setUsername(result)
       setIsLoggedIn(true)

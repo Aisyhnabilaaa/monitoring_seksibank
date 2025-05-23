@@ -11,7 +11,7 @@ const MonitoringAdminB = () => {
   const fetchData = () => {
     const token = localStorage.getItem('token')
     axios
-      .get('http://localhost:3000/api/monitoringNota/', {
+      .get('http://layananbank-production.up.railway.app/api/monitoringNota/', {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -35,7 +35,7 @@ const MonitoringAdminB = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `http://localhost:3000/api/monitoringNota/${id}`,
+        `http://layananbank-production.up.railway.app/api/monitoringNota/${id}`,
         { status: newStatus },
         {
           headers: {
@@ -57,7 +57,7 @@ const MonitoringAdminB = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `http://localhost:3000/api/monitoringNota/${id}`,
+        `http://layananbank-production.up.railway.app/api/monitoringNota/${id}`,
         { catatan: newCatatan },
         {
           headers: {
@@ -91,11 +91,14 @@ const MonitoringAdminB = () => {
 
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`http://localhost:3000/api/monitoringNota/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      await axios.delete(
+        `http://layananbank-production.up.railway.app/api/monitoringNota/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      })
+      )
 
       // Hapus data dari state
       setData(prevData => prevData.filter(item => item.id !== id))

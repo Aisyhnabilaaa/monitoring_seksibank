@@ -10,7 +10,9 @@ const MonitoringC = () => {
   const [searchTerm, setSearchTerm] = useState('') // 👉 State untuk pencarian
   const fetchData = () => {
     axios
-      .get('http://localhost:3000/api/monitoringKoreksi/')
+      .get(
+        'http://layananbank-production.up.railway.app/api/monitoringKoreksi/'
+      )
       .then(response => {
         console.log(response.data) // Tambahkan log ini
         setData(response.data)
@@ -43,7 +45,7 @@ const MonitoringC = () => {
 
     try {
       await axios.patch(
-        `http://localhost:3000/api/koreksiPenerimaan/${id}`,
+        `http://layananbank-production.up.railway.app/api/koreksiPenerimaan/${id}`,
         formData,
         {
           headers: {

@@ -52,7 +52,7 @@ const DokumenE = () => {
       if (!token) throw new Error('Token tidak ditemukan.')
 
       const response = await fetch(
-        'http://localhost:3000/api/pembukaanRekening/create',
+        'http://layananbank-production.up.railway.app/api/pembukaanRekening/create',
         {
           method: 'POST',
           headers: {

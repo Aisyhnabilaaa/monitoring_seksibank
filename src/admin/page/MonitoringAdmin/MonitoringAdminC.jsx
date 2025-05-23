@@ -10,11 +10,14 @@ const MonitoringAdminC = () => {
   const fetchData = () => {
     const token = localStorage.getItem('token')
     axios
-      .get('http://localhost:3000/api/monitoringKoreksi/', {
-        headers: {
-          Authorization: `Bearer ${token}`
+      .get(
+        'http://layananbank-production.up.railway.app/api/monitoringKoreksi/',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      })
+      )
       .then(response => {
         setData(response.data)
       })
@@ -34,7 +37,7 @@ const MonitoringAdminC = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `http://localhost:3000/api/monitoringKoreksi/${id}`,
+        `http://layananbank-production.up.railway.app/api/monitoringKoreksi/${id}`,
         { status: newStatus },
         {
           headers: {
@@ -56,7 +59,7 @@ const MonitoringAdminC = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `http://localhost:3000/api/monitoringKoreksi/${id}`,
+        `http://layananbank-production.up.railway.app/api/monitoringKoreksi/${id}`,
         { catatan: newCatatan },
         {
           headers: {
@@ -90,11 +93,14 @@ const MonitoringAdminC = () => {
 
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(`http://localhost:3000/api/monitoringKoreksi/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+      await axios.delete(
+        `http://layananbank-production.up.railway.app/api/monitoringKoreksi/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         }
-      })
+      )
       setData(prevData => prevData.filter(item => item.id !== id))
 
       Swal.fire({

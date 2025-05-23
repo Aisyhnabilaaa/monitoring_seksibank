@@ -10,7 +10,9 @@ const MonitoringF = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const fetchData = () => {
     axios
-      .get('http://localhost:3000/api/monitoringLaporan/')
+      .get(
+        'http://layananbank-production.up.railway.app/api/monitoringLaporan/'
+      )
       .then(response => {
         setData(response.data)
       })
