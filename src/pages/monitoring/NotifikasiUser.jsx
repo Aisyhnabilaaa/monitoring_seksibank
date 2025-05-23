@@ -11,7 +11,7 @@ const NotifikasiUserPage = () => {
     const fetchNotifications = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3000/notifikasi/${userId}`
+          `http://localhost:3000/api/notifikasi/${userId}`
         )
         console.log('Data notifikasi:', res.data) // debugz`
         setNotifications(res.data)

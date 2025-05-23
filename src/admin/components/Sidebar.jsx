@@ -41,7 +41,7 @@ const Sidebar = () => {
       try {
         const id = localStorage.getItem('id')
         const response = await axios.get(
-          `http://localhost:3000/notifikasi/${id}`
+          `http://localhost:3000/api/notifikasi/${id}`
         )
         const unreadNotif = response.data.filter(n => n.status === 'unread')
         setNotifCount(unreadNotif.length)

@@ -11,7 +11,7 @@ const NotifikasiPage = () => {
     const fetchNotifications = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3000/notifikasi/${userId}`
+          `http://localhost:3000/api/notifikasi/${userId}`
         )
         console.log('Data notifikasi:', res.data) // debugz`
         setNotifications(res.data)
@@ -32,7 +32,7 @@ const NotifikasiPage = () => {
   const handleNotifClick = async id => {
     try {
       // request PATCH ke backend untuk ubah status notif
-      await axios.patch(`http://localhost:3000/notifikasi/read/${id}`)
+      await axios.patch(`http://localhost:3000/api/notifikasi/read/${id}`)
 
       // update state lokal biar status notif langsung berubah
       setNotifications(prev => {
@@ -61,7 +61,7 @@ const NotifikasiPage = () => {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete('http://localhost:3000/notifikasi/deleteall')
+        await axios.delete('http://localhost:3000/api/notifikasi/deleteall')
         setNotifications([]) // Clear notifications
         setNotifCount(0) // Reset count
         Swal.fire(
