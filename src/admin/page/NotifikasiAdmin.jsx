@@ -33,7 +33,7 @@ const NotifikasiPage = () => {
     try {
       // request PATCH ke backend untuk ubah status notif
       await axios.patch(
-        `http://layananbank-production.up.railway.app/api/notifikasi/read/${id}`
+        `https://layananbank-production.up.railway.app/api/notifikasi/read/${id}`
       )
 
       // update state lokal biar status notif langsung berubah
@@ -64,7 +64,7 @@ const NotifikasiPage = () => {
     if (result.isConfirmed) {
       try {
         await axios.delete(
-          'http://layananbank-production.up.railway.app/api/notifikasi/deleteall'
+          'https://layananbank-production.up.railway.app/api/notifikasi/deleteall'
         )
         setNotifications([]) // Clear notifications
         setNotifCount(0) // Reset count
