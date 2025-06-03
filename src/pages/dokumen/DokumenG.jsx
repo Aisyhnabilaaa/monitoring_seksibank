@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import Swal from 'sweetalert2'
+import NavbarComponent from '../../components/NavbarComponent'
 
 const DokumenG = () => {
   const [values, setValues] = useState({
@@ -83,6 +84,7 @@ const DokumenG = () => {
 
   return (
     <div>
+      <NavbarComponent />
       <header className='header-dokumen'>
         <Container fluid>
           <Row className='dokumenheader-box d-flex align-items-center justify-content-center'>
