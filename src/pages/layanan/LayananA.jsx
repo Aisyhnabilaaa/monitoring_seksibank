@@ -106,8 +106,7 @@ const LayananA = () => {
               {/* Judul */}
               <Col xs={12} className='text-center mb-4'>
                 <h1 className='dokjudul-B text-4xl fw-bold'>
-                  Dokumen Kelengkapan Penerbitan Nota Konfirmasi Atas Penerimaan
-                  Negara
+                  Dokumen Kelengkapan Penyelesaian Retur atas SP2D
                 </h1>
               </Col>
               {/*Daftar Dokumen */}
