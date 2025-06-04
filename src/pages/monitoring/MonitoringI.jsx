@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Container, Table, Spinner, Form, Button } from 'react-bootstrap'
 import axios from 'axios'
 import NavbarComponent from '../../components/NavbarComponent'
+import Swal from 'sweetalert2'
 
 const MonitoringI = () => {
   const [data, setData] = useState([])
@@ -52,6 +53,11 @@ const MonitoringI = () => {
         }
       )
       fetchData()
+      Swal.fire({
+        title: 'Pengajuan Dokumen Berhasil Diubah!',
+        icon: 'success',
+        draggable: true
+      })
     } catch (error) {
       console.error('Gagal Upload ulang dokumen:', error)
       alert('upload gagal')
