@@ -19,7 +19,7 @@ const Sidebar = () => {
         console.log('User ID:', id)
 
         const response = await axios.get(
-          `https://layananbank-production.up.railway.app/api/user/${id}`,
+          `http://localhost:3001/api/user/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -41,7 +41,7 @@ const Sidebar = () => {
       try {
         const id = localStorage.getItem('id')
         const response = await axios.get(
-          `https://layananbank-production.up.railway.app/api/notifikasi/${id}`
+          `http://localhost:3001/api/notifikasi/${id}`
         )
         const unreadNotif = response.data.filter(n => n.status === 'unread')
         setNotifCount(unreadNotif.length)
@@ -70,6 +70,24 @@ const Sidebar = () => {
               <div className='sidebar-left'>
                 <i className='bi bi-house sidebar-icon'></i>
                 <span className='sidebar-text'>Home</span>
+              </div>
+            </Link>
+          </li>
+
+          <li className='sidebar-item'>
+            <Link className='sidebar-link' to='/admin/satker/formSatker'>
+              <div className='sidebar-left'>
+                <i className='bi bi-people sidebar-icon'></i>
+                <span className='sidebar-text'>Satker</span>
+              </div>
+            </Link>
+          </li>
+
+          <li className='sidebar-item'>
+            <Link className='sidebar-link' to='/admin/Register/Registerform'>
+              <div className='sidebar-left'>
+                <i className='bi bi-people sidebar-icon'></i>
+                <span className='sidebar-text'>Tambah Akun</span>
               </div>
             </Link>
           </li>
@@ -113,8 +131,8 @@ const Sidebar = () => {
                   'Pengajuan Penerbitan Nota Konfirmasi atas Penerimaan Negara',
                   'Koreksi Penerimaan Negara Atas Setoran Satuan Kerja',
                   'Void SP2D',
-                  'Pengajuan Persetujuan Pembukaan Rekening',
                   'Permohonan Persetujuan Pembukaan Rekening Satker',
+                  'Laporan Pembukaan atau Penutupan Rekening',
                   'Pengembalian PFK',
                   'Penerbitan Bukti Penerimaan Negara',
                   'Pengembalian PNBP'
@@ -135,24 +153,45 @@ const Sidebar = () => {
 
         {/* Footer */}
         <div className='sidebar-footer'>
-          <hr className='text-secondary' />
-          <div className='sidebar-user'>
-            <i className='bi bi-person fs-5'></i>
-            <span className='sidebar-username'>
-              {username ? username : <div className='spinner'></div>}
-            </span>
-            <button
-              className='user-menu-toggle'
-              onClick={() => setUserMenuOpen(!isUserMenuOpen)}
-            >
-              <i className='bi bi-three-dots-vertical'></i>
-            </button>
+          <hr className='sidebar-divider' />
 
-            {/* Dropdown menu logout */}
+          <div className='sidebar-user-container'>
+            <div className='sidebar-user-info'>
+              <div className='user-avatar'>
+                <i className='bi bi-person-circle'></i>
+              </div>
+              <div className='user-details'>
+                <span className='sidebar-username'>
+                  {username ? (
+                    username
+                  ) : (
+                    <span className='placeholder-glow'>
+                      <span className='placeholder col-8'></span>
+                    </span>
+                  )}
+                </span>
+                <span className='user-role '>Administrator</span>
+              </div>
+              <button
+                className={`user-menu-toggle ${isUserMenuOpen ? 'active' : ''}`}
+                onClick={() => setUserMenuOpen(!isUserMenuOpen)}
+              >
+                <i
+                  className={`bi bi-chevron-${isUserMenuOpen ? 'down' : 'up'}`}
+                ></i>
+              </button>
+            </div>
+
+            {/* Dropdown menu logout yang lebih cantik */}
             {isUserMenuOpen && (
-              <div className='user-menu'>
-                <button onClick={handleLogout} className='logout-btn'>
-                  Logout
+              <div className='user-dropdown-menu animate__animated animate__fadeInUp'>
+                <button className='dropdown-item-custom'>
+                  <i className='bi bi-gear me-2'></i> Pengaturan
+                </button>
+                <div className='dropdown-divider'></div>
+                <button onClick={handleLogout} className='logout-btn-custom'>
+                  <i className='bi bi-box-arrow-right me-2'></i>
+                  <span>Keluar</span>
                 </button>
               </div>
             )}

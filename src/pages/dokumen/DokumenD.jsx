@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import Swal from 'sweetalert2'
+import api from '../../api'
 import NavbarComponent from '../../components/NavbarComponent'
 
 const DokumenD = () => {
   const [values, setValues] = useState({
-    kode: '',
-    contact: '',
     unggah: null
   })
-
+  const [isLoading, setIsLoading] = useState(false)
   const [telegramOption, setTelegramOption] = useState('') // Iya/Tidak
   const [phoneNumber, setPhoneNumber] = useState('') // Nomor jika Tidak
   const [errorMessage, setErrorMessage] = useState('')
@@ -48,29 +47,34 @@ const DokumenD = () => {
       formData.append('unggahDokumen', values.unggah)
     }
 
+    setIsLoading(true)
+    Swal.fire({
+      title: 'Mohon Tunggu',
+      text: 'Sedang memproses dokumen ',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
+
     try {
       const token = localStorage.getItem('token') // Kalau pakai auth
-      if (!token)
-        throw new Error('Token tidak ditemukan. Silakan login kembali.')
-
-      const response = await fetch(
-        'https://layananbank-production.up.railway.app/api/pengajuanVoid/create',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-          body: formData
+      await api.post('/pengajuanVoid/create', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
         }
-      )
-
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.message || 'Gagal mengirim data')
+      })
       Swal.fire({
         title: 'Pengajuan Dokumen Berhasil!',
         icon: 'success',
         draggable: true
       })
+      setValues({ unggah: null })
+      setPhoneNumber('')
+      setErrorMessage('')
+      e.target.reset()
     } catch (err) {
       setErrorMessage(`Terjadi kesalahan: ${err.message}`)
       Swal.fire({
@@ -78,13 +82,14 @@ const DokumenD = () => {
         icon: 'warning',
         draggable: true
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
     <div>
       <NavbarComponent />
-      {/* Header */}
       <header className='header-dokumen'>
         <Container fluid>
           <Row className='dokumenheader-box d-flex align-items-center justify-content-center'>
@@ -106,23 +111,6 @@ const DokumenD = () => {
         <Row className='justify-content-center mt-4'>
           <Col md={8} lg={10}>
             <Form onSubmit={handleSubmit} className='formulir'>
-              {/* Kode Satker */}
-              <Form.Group as={Row} className='mb-3'>
-                <Form.Label column sm={4}>
-                  Kode Satker
-                </Form.Label>
-                <Col sm={8}>
-                  <Form.Control
-                    type='text'
-                    name='kode'
-                    placeholder='Masukkan Kode Satker'
-                    onChange={handleChanges}
-                    required
-                    value={values.kode}
-                  />
-                </Col>
-              </Form.Group>
-
               {/* Telegram */}
               <Form.Group as={Row} className='mb-3'>
                 <Form.Label column sm={4}>
@@ -204,8 +192,19 @@ const DokumenD = () => {
 
               {/* Submit */}
               <div className='text-end'>
-                <Button type='submit' variant='primary'>
-                  Kirim
+                <Button type='submit' variant='primary' disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <span
+                        className='spinner-border spinner-border-sm me-2'
+                        role='status'
+                        aria-hidden='true'
+                      ></span>
+                      Kirim...
+                    </>
+                  ) : (
+                    'Kirim'
+                  )}
                 </Button>
               </div>
             </Form>

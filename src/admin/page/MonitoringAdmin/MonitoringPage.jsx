@@ -24,13 +24,12 @@ const MonitoringPage = () => {
       path: '/admin/monitoring/Void SP2D'
     },
     {
-      label:
-        'Penerbitan Surat Persetujuan / Penolakan Pembukaan Rekening Satker',
+      label: 'Permohonan Persetujuan Pembukaan Rekening Satker',
       path: '/admin/monitoring/Permohonan Persetujuan Pembukaan Rekening Satker'
     },
     {
-      label: 'Laporan Pembukaan / Penutupan Rekening',
-      path: '/admin/monitoring/Laporan Pembukaan / Penutupan Rekening'
+      label: 'Laporan Pembukaan atau Penutupan Rekening',
+      path: '/admin/monitoring/Laporan Pembukaan atau Penutupan Rekening'
     },
     { label: 'Pengembalian PFK', path: '/admin/monitoring/Pengembalian PFK' },
     {

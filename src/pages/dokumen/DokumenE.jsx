@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import Swal from 'sweetalert2'
+import api from '../../api'
 import NavbarComponent from '../../components/NavbarComponent'
 
 const DokumenE = () => {
   const [values, setValues] = useState({
-    kode: '',
-    contact: '',
     unggah: null
   })
-
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedOption, setSelectedOption] = useState('') // Iya / tidak
   const [phoneNumber, setPhoneNumber] = useState('') // Kalau pilih "tidak"
   const [errorMessage, setErrorMessage] = useState('')
@@ -36,55 +35,66 @@ const DokumenE = () => {
     }
 
     setErrorMessage('')
+    setIsLoading(true)
 
     const formData = new FormData()
-    formData.append('kodeSatker', values.kode)
+    formData.append('kodeSatker', values.kode || '')
     formData.append(
       'noTelpon',
       selectedOption === 'tidak' ? phoneNumber : 'Tergabung Telegram'
     )
     formData.append('jenisRekening', values.contact)
+
     if (values.unggah) {
       formData.append('unggahDokumen', values.unggah)
     }
 
+    Swal.fire({
+      title: 'Mohon Tunggu',
+      text: 'Sedang memproses dokumen',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
+
     try {
-      const token = localStorage.getItem('token') // jika pakai autentikasi
-      if (!token) throw new Error('Token tidak ditemukan.')
-
-      const response = await fetch(
-        'https://layananbank-production.up.railway.app/api/pembukaanRekening/create',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-          body: formData
+      const token = localStorage.getItem('token')
+      await api.post('/pembukaanRekening/create', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data' // Penting untuk kirim file
         }
-      )
-
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.message || 'Gagal mengirim data')
+      })
 
       Swal.fire({
         title: 'Pengajuan Dokumen Berhasil!',
-        icon: 'success',
-        draggable: true
+        icon: 'success'
       })
+
+      // Reset Form
+      setValues({ unggah: null, contact: '', kode: '' })
+      setPhoneNumber('')
+      setSelectedOption('')
+      e.target.reset()
     } catch (err) {
-      setErrorMessage(`Terjadi kesalahan: ${err.message}`)
+      const msg = err.response?.data?.message || err.message
+      setErrorMessage(`Terjadi kesalahan: ${msg}`)
+
       Swal.fire({
         title: 'Gagal Mengirim Dokumen!',
-        icon: 'warning',
-        draggable: true
+        text: msg,
+        icon: 'warning'
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
     <div>
       <NavbarComponent />
-      {/* Header */}
       <header className='header-dokumen'>
         <Container fluid>
           <Row className='dokumenheader-box d-flex align-items-center justify-content-center'>
@@ -95,37 +105,17 @@ const DokumenE = () => {
             >
               <div className='dokumenheader-title-container'>
                 <h1 className='dokumenheader-title'>
-                  Pengajuan Persetujuan Pembukaan Rekening
+                  Permohonan Pembukaan Rekening Satker
                 </h1>
               </div>
             </Col>
           </Row>
         </Container>
       </header>
-
-      {/* Form */}
       <Container>
         <Row className='justify-content-center mt-4'>
           <Col md={8} lg={10}>
             <Form onSubmit={handleSubmit} className='formulir'>
-              {/* Kode Satker */}
-              <Form.Group as={Row} className='mb-3'>
-                <Form.Label column sm={4}>
-                  Kode Satker
-                </Form.Label>
-                <Col sm={8}>
-                  <Form.Control
-                    type='text'
-                    name='kode'
-                    placeholder='Masukkan Kode Satker'
-                    onChange={handleChanges}
-                    required
-                    value={values.kode}
-                  />
-                </Col>
-              </Form.Group>
-
-              {/* Telegram */}
               <Form.Group as={Row} className='mb-3'>
                 <Form.Label column sm={4}>
                   Nomor Telepon
@@ -161,8 +151,6 @@ const DokumenE = () => {
                   )}
                 </Col>
               </Form.Group>
-
-              {/* Jenis Rekening */}
               <Form.Group as={Row} className='mb-3'>
                 <Form.Label column sm={4}>
                   Jenis Rekening
@@ -178,8 +166,6 @@ const DokumenE = () => {
                   />
                 </Col>
               </Form.Group>
-
-              {/* Upload */}
               <Form.Group as={Row} className='mb-3'>
                 <Form.Label column sm={4}>
                   Unggah Dokumen Persyaratan
@@ -197,18 +183,25 @@ const DokumenE = () => {
                   </p>
                 </Col>
               </Form.Group>
-
-              {/* Error Message */}
               {errorMessage && (
                 <div className='alert alert-danger' role='alert'>
                   {errorMessage}
                 </div>
               )}
-
-              {/* Submit */}
               <div className='text-end'>
-                <Button type='submit' variant='primary'>
-                  Kirim
+                <Button type='submit' variant='primary' disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <span
+                        className='spinner-border spinner-border-sm me-2'
+                        role='status'
+                        aria-hidden='true'
+                      ></span>
+                      Kirim...
+                    </>
+                  ) : (
+                    'Kirim'
+                  )}
                 </Button>
               </div>
             </Form>

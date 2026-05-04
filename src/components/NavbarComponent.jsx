@@ -17,14 +17,11 @@ const NavbarComponent = () => {
 
   const getUser = async id => {
     try {
-      const response = await axios.get(
-        `https://layananbank-production.up.railway.app/api/user/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      const response = await axios.get(`http://localhost:3001/api/user/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
+      })
       const result = response.data
       setUsername(result)
       setIsLoggedIn(true)
@@ -92,16 +89,15 @@ const NavbarComponent = () => {
               </NavDropdown.Item>
               <NavDropdown.Item
                 as={NavLink}
-                to='/layanan/Penerbitan Surat Persetujuan / Penolakan Pembukaan Rekening Satker'
+                to='/layanan/Permohonan Persetujuan Pembukaan Rekening Satker'
               >
-                Penerbitan Surat Persetujuan / Penolakan Pembukaan Rekening
-                Satker
+                Permohonan Persetujuan Pembukaan Rekening Satker
               </NavDropdown.Item>
               <NavDropdown.Item
                 as={NavLink}
-                to='/layanan/Laporan Pembukaan / Penutupan Rekening'
+                to='/layanan/Laporan Pembukaan atau Penutupan Rekening'
               >
-                Laporan Pembukaan / Penutupan Rekening
+                Laporan Pembukaan atau Penutupan Rekening
               </NavDropdown.Item>
               <NavDropdown.Item as={NavLink} to='/layanan/Pengembalian PFK'>
                 Pengembalian PFK
@@ -138,16 +134,15 @@ const NavbarComponent = () => {
               </NavDropdown.Item>
               <NavDropdown.Item
                 as={NavLink}
-                to='/dokumen/Penerbitan Surat Persetujuan / Penolakan Pembukaan Rekening Satker'
+                to='/dokumen/Permohonan Persetujuan Pembukaan Rekening Satker'
               >
-                Penerbitan Surat Persetujuan / Penolakan Pembukaan Rekening
-                Satker
+                Permohonan Persetujuan Pembukaan Rekening Satker
               </NavDropdown.Item>
               <NavDropdown.Item
                 as={NavLink}
-                to='/dokumen/Laporan Pembukaan / Penutupan Rekening'
+                to='/dokumen/Laporan Pembukaan atau Penutupan Rekening'
               >
-                Laporan Pembukaan / Penutupan Rekening
+                Laporan Pembukaan atau Penutupan Rekening
               </NavDropdown.Item>
               <NavDropdown.Item as={NavLink} to='/dokumen/Pengembalian PFK'>
                 Pengembalian PFK

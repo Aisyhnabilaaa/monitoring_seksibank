@@ -1,20 +1,19 @@
 import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
-import axios from 'axios'
+import api from '../../api'
 import Swal from 'sweetalert2'
 import NavbarComponent from '../../components/NavbarComponent'
 
 const DokumenH = () => {
   const [values, setValues] = useState({
-    kode: '',
     unggah: null
   })
-
+  const [isLoading, setIsLoading] = useState(false)
   const [telegramGroup, setTelegramGroup] = useState('') // Untuk radio Telegram
   const [phoneNumber, setPhoneNumber] = useState('') // Nomor telepon jika "tidak"
-  const [selectedReason, setSelectedReason] = useState('') // Untuk alasan retur
-  const [customReason, setCustomReason] = useState('') // Alasan retur lainnya
-
+  // const [selectedReason, setSelectedReason] = useState('') // Untuk alasan retur
+  // const [customReason, setCustomReason] = useState('') // Alasan retur lainnya
+  const [errorMessage, setErrorMessage] = useState('')
   const handleChanges = e => {
     const { name, type, files, value } = e.target
 
@@ -29,21 +28,23 @@ const DokumenH = () => {
 
     // Validasi sederhana
     if (
-      !values.kode ||
-      !selectedReason ||
+      // !selectedReason ||
       !values.unggah ||
-      (telegramGroup === 'tidak' && !phoneNumber) ||
-      (selectedReason === 'lainnya' && !customReason.trim())
+      (telegramGroup === 'tidak' && !phoneNumber)
+      // (selectedReason === 'lainnya' && !customReason.trim())
     ) {
-      alert('Harap lengkapi semua data terlebih dahulu.')
+      setErrorMessage('Harap lengkapi semua data terlebih dahulu.')
       return
     }
 
-    const alasanReturMap = {
-      'Rekening Supplier Tidak Aktif': 'REKENING_TIDAK_AKTIF',
-      'Rekening Pasif': 'REKENING_PASIF',
-      'Nomor Rekening Salah': 'NOMOR_REKENING_SALAH'
-    }
+    // const alasanReturMap = {
+    //   'Rekening Supplier Tidak Aktif': 'REKENING_TIDAK_AKTIF',
+    //   'Rekening Pasif': 'REKENING_PASIF',
+    //   'Nomor Rekening Salah': 'NOMOR_REKENING_SALAH'
+    // }
+
+    setErrorMessage('')
+    setIsLoading(true)
 
     const formData = new FormData()
 
@@ -54,28 +55,32 @@ const DokumenH = () => {
     )
     formData.append('unggah_dokumen', values.unggah)
 
-    formData.append(
-      'alasanRetur',
-      selectedReason === 'lainnya' ? 'LAINNYA' : alasanReturMap[selectedReason]
-    )
-    formData.append(
-      'alasanLainnya',
-      selectedReason === 'lainnya' ? customReason : ''
-    )
+    // formData.append(
+    //   'alasanRetur',
+    //   selectedReason === 'lainnya' ? 'LAINNYA' : alasanReturMap[selectedReason]
+    // )
+    // formData.append(
+    //   'alasanLainnya',
+    //   selectedReason === 'lainnya' ? customReason : ''
+    // )
+    Swal.fire({
+      title: 'Mohon Tunggu',
+      text: 'Sedang memproses dokumen ',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
 
     try {
       const token = localStorage.getItem('token') // Pastikan token disimpan saat login
 
-      const response = await axios.post(
-        'https://layananbank-production.up.railway.app/api/penerbitanBukti/create',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`
-          }
+      const response = await api.post('/penerbitanBukti/create', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
+      })
 
       Swal.fire({
         title: 'Pengajuan Dokumen Berhasil!',
@@ -85,16 +90,19 @@ const DokumenH = () => {
       setValues({ kode: '', unggah: null })
       setTelegramGroup('')
       setPhoneNumber('')
-      setSelectedReason('')
-      setCustomReason('')
+      // setSelectedReason('')
+      // setCustomReason('')
       console.log(response.data)
     } catch (error) {
+      setErrorMessage(`Terjadi kesalahan: ${error.message}`)
       console.error('Gagal mengirim:', error.response?.data || error.message)
       Swal.fire({
         title: 'Gagal Mengirim Dokumen!',
         icon: 'warning',
         draggable: true
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -123,23 +131,6 @@ const DokumenH = () => {
         <Row className='justify-content-center mt-4'>
           <Col md={8} lg={10}>
             <Form onSubmit={handleSubmit} className='formulir'>
-              {/* Kode Satker */}
-              <Form.Group as={Row} className='mb-3'>
-                <Form.Label column sm={4}>
-                  Kode Satker
-                </Form.Label>
-                <Col sm={8}>
-                  <Form.Control
-                    type='text'
-                    name='kode'
-                    placeholder='Masukkan Kode Satker'
-                    onChange={handleChanges}
-                    required
-                    value={values.kode}
-                  />
-                </Col>
-              </Form.Group>
-
               {/* Nomor Telepon / Telegram */}
               <Form.Group as={Row} className='mb-3'>
                 <Form.Label column sm={4}>
@@ -176,7 +167,7 @@ const DokumenH = () => {
                 </Col>
               </Form.Group>
 
-              <Form.Group as={Row} className='mb-3'>
+              {/* <Form.Group as={Row} className='mb-3'>
                 <Form.Label column sm={4}>
                   Alasan Retur
                 </Form.Label>
@@ -213,11 +204,11 @@ const DokumenH = () => {
                     onChange={e => setSelectedReason(e.target.value)}
                     checked={selectedReason === 'lainnya'}
                   />
-                </Col>
-              </Form.Group>
+                </Col> */}
+              {/* </Form.Group> */}
 
               {/* Alasan Lainnya */}
-              {selectedReason === 'lainnya' && (
+              {/* {selectedReason === 'lainnya' && (
                 <Form.Group as={Row} className='mb-3'>
                   <Form.Label column sm={4}>
                     Alasan Lainnya
@@ -232,7 +223,7 @@ const DokumenH = () => {
                     />
                   </Col>
                 </Form.Group>
-              )}
+              )} */}
 
               {/* Upload Dokumen */}
               <Form.Group as={Row} className='mb-3'>
@@ -252,10 +243,28 @@ const DokumenH = () => {
                 </Col>
               </Form.Group>
 
+              {/* Error Message */}
+              {errorMessage && (
+                <div className='alert alert-danger' role='alert'>
+                  {errorMessage}
+                </div>
+              )}
+
               {/* Tombol Submit */}
               <div className='text-end'>
-                <Button type='submit' variant='primary'>
-                  Kirim
+                <Button type='submit' variant='primary' disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <span
+                        className='spinner-border spinner-border-sm me-2'
+                        role='status'
+                        aria-hidden='true'
+                      ></span>
+                      Kirim...
+                    </>
+                  ) : (
+                    'Kirim'
+                  )}
                 </Button>
               </div>
             </Form>
@@ -267,214 +276,3 @@ const DokumenH = () => {
 }
 
 export default DokumenH
-
-// import { useState } from 'react'
-// import { Container, Row, Col, Form, Button } from 'react-bootstrap'
-// import axios from 'axios'
-
-// const DokumenH = () => {
-//   const [values, setValues] = useState({
-//     kode: '',
-//     unggah: null
-//   })
-
-//   const [telegramGroup, setTelegramGroup] = useState('') // Untuk radio Telegram
-//   const [phoneNumber, setPhoneNumber] = useState('') // Nomor telepon jika "tidak"
-//   const [selectedReason, setSelectedReason] = useState('') // Untuk alasan retur
-//   const [customReason, setCustomReason] = useState('') // Alasan retur lainnya
-
-//   const handleChanges = e => {
-//     const { name, type, files, value } = e.target
-
-//     setValues({
-//       ...values,
-//       [name]: type === 'file' ? (files.length > 0 ? files[0] : null) : value
-//     })
-//   }
-
-//   const handleSubmit = async e => {
-//     e.preventDefault()
-
-//     // Validasi sederhana
-//     if (
-//       !values.kode ||
-//       !selectedReason ||
-//       !values.unggah ||
-//       (telegramGroup === 'tidak' && !phoneNumber) ||
-//       (selectedReason === 'lainnya' && !customReason.trim())
-//     ) {
-//       alert('Harap lengkapi semua data terlebih dahulu.')
-//       return
-//     }
-
-//     const alasanReturMap = {
-//       'Rekening Supplier Tidak Aktif': 'REKENING_TIDAK_AKTIF',
-//       'Rekening Pasif': 'REKENING_PASIF',
-//       'Nomor Rekening Salah': 'NOMOR_REKENING_SALAH'
-//     }
-
-//     const formData = new FormData()
-
-//     formData.append('kodeSatker', values.kode)
-//     formData.append(
-//       'noTelpon',
-//       telegramGroup === 'tidak' ? phoneNumber : 'Sudah tergabung Telegram'
-//     )
-//     formData.append('unggah_dokumen', values.unggah)
-
-//     formData.append(
-//       'alasanRetur',
-//       selectedReason === 'lainnya' ? 'LAINNYA' : alasanReturMap[selectedReason]
-//     )
-//     formData.append(
-//       'alasanLainnya',
-//       selectedReason === 'lainnya' ? customReason : ''
-//     )
-
-//     try {
-//       const token = localStorage.getItem('token') // Pastikan token disimpan saat login
-
-//       const response = await axios.post(
-//         'http://localhost:3000/penerbitanBukti/create',
-//         formData,
-//         {
-//           headers: {
-//             'Content-Type': 'multipart/form-data',
-//             Authorization: `Bearer ${token}`
-//           }
-//         }
-//       )
-
-//       alert('Berhasil mengirim retur SP2D!')
-//       setValues({ kode: '', unggah: null })
-//       setTelegramGroup('')
-//       setPhoneNumber('')
-//       setSelectedReason('')
-//       setCustomReason('')
-//       console.log(response.data)
-//     } catch (error) {
-//       console.error('Gagal mengirim:', error.response?.data || error.message)
-//       alert('Gagal mengirim pengajuan retur!')
-//     }
-//   }
-
-//   return (
-//     <div>
-//       {/* Header */}
-//       <header className='header-dokumen'>
-//         <Container fluid>
-//           <Row className='dokumenheader-box d-flex align-items-center justify-content-center'>
-//             <Col
-//               xs={12}
-//               md={6}
-//               className='text-center text-md-start d-flex flex-column justify-content-center'
-//             >
-//               <div className='dokumenheader-title-container'>
-//                 <h1 className='dokumenheader-title'>
-//                   Penerbitan Bukti Penerimaan Negara (Bukti Potong)
-//                 </h1>
-//               </div>
-//             </Col>
-//           </Row>
-//         </Container>
-//       </header>
-
-//       <Container>
-//         {/* Form */}
-//         <Row className='justify-content-center mt-4'>
-//           <Col md={8} lg={10}>
-//             <Form onSubmit={handleSubmit} className='formulir'>
-//               {/* Kode Satker */}
-//               <Form.Group as={Row} className='mb-3'>
-//                 <Form.Label column sm={4}>
-//                   Kode Satker
-//                 </Form.Label>
-//                 <Col sm={8}>
-//                   <Form.Control
-//                     type='text'
-//                     name='kode'
-//                     placeholder='Masukkan Kode Satker'
-//                     onChange={handleChanges}
-//                     required
-//                     value={values.kode}
-//                   />
-//                 </Col>
-//               </Form.Group>
-
-//               {/* Nomor Telepon dan Telegram */}
-//               <Form.Group as={Row} className='mb-3'>
-//                 <Form.Label column sm={4}>
-//                   Nomor Telepon
-//                 </Form.Label>
-//                 <Col sm={8}>
-//                   <p>Apakah Anda tergabung dengan Telegram KPPN Palu?</p>
-//                   <Form.Check
-//                     type='radio'
-//                     label='Iya'
-//                     name='telegram'
-//                     value='Iya'
-//                     onChange={handleChanges}
-//                     checked={telegramGroup === 'Iya'}
-//                   />
-//                   <Form.Check
-//                     type='radio'
-//                     label='Tidak'
-//                     name='telegram'
-//                     value='Tidak'
-//                     onChange={handleChanges}
-//                     checked={telegramGroup === 'Tidak'}
-//                   />
-
-//                   {telegramGroup === 'Tidak' && (
-//                     <Form.Control
-//                       type='text'
-//                       placeholder='Masukkan Nomor Telepon Anda'
-//                       name='contact'
-//                       value={values.contact}
-//                       onChange={handleChanges}
-//                       className='mt-2'
-//                       required
-//                     />
-//                   )}
-//                 </Col>
-//               </Form.Group>
-
-//               {/* Unggah Dokumen */}
-//               <Form.Group as={Row} className='mb-3'>
-//                 <Form.Label column sm={4}>
-//                   Unggah Dokumen Persyaratan
-//                 </Form.Label>
-//                 <Col sm={8}>
-//                   <Form.Control
-//                     type='file'
-//                     name='unggah'
-//                     onChange={handleChanges}
-//                     required
-//                   />
-//                   {values.unggah && (
-//                     <p className='mt-2 text-success'>
-//                       File: {values.unggah.name}
-//                     </p>
-//                   )}
-//                   <p className='fs-6 text-warning'>
-//                     Silahkan unggah dokumen kelengkapan dalam format .pdf dan
-//                     ADK dalam format .txt
-//                   </p>
-//                 </Col>
-//               </Form.Group>
-
-//               {/* Tombol Submit */}
-//               <div className='text-end'>
-//                 <Button type='submit' variant='primary'>
-//                   Kirim
-//                 </Button>
-//               </div>
-//             </Form>
-//           </Col>
-//         </Row>
-//       </Container>
-//     </div>
-//   )
-// }
-
-// export default DokumenH

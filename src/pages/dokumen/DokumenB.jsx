@@ -1,16 +1,15 @@
 import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
+import axios from 'axios'
 import Swal from 'sweetalert2'
 import NavbarComponent from '../../components/NavbarComponent'
 
 const DokumenB = () => {
   const [values, setValues] = useState({
-    kode: '',
-    contact: '',
-    subject: '',
     unggah: null
   })
 
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedReason, setSelectedReason] = useState('') // Tahun Setoran
   const [customReason, setCustomReason] = useState('') // Tahun Lainnya
   const [phoneOption, setPhoneOption] = useState('') // Iya / Tidak
@@ -34,8 +33,6 @@ const DokumenB = () => {
 
   const handleSubmit = async e => {
     e.preventDefault()
-
-    // Validasi nomor telepon jika pilihan 'Tidak'
     if (phoneOption === 'Tidak' && !phoneNumber) {
       setErrorMessage(
         'Nomor telepon harus diisi jika Anda memilih "Tidak" untuk Telegram'
@@ -46,75 +43,66 @@ const DokumenB = () => {
     }
 
     const formData = new FormData()
-    formData.append('kodeSatker', values.kode)
     formData.append(
       'noTelpon',
       phoneOption === 'Tidak' ? phoneNumber : 'Tergabung Telegram'
     )
+    // Data Tahun Setoran
     formData.append(
       'tahunSetoran',
-      selectedReason === 'lainnya' ? 'LAINNYA' : selectedReason
+      selectedReason === 'lainnya' ? customReason : selectedReason
     )
-    if (selectedReason === 'lainnya') {
-      formData.append('tahunLainnya', customReason)
-    }
     if (values.unggah) {
       formData.append('unggahDokumen', values.unggah)
     }
 
+    setIsLoading(true)
+    Swal.fire({
+      title: 'Mohon Tunggu',
+      text: 'Sedang memproses dokumen ',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
+
     try {
-      // Cek token
       const token = localStorage.getItem('token')
-      if (!token) {
-        throw new Error('Token tidak ditemukan. Silakan login kembali.')
-      }
-
-      // Menampilkan log untuk debugging
-      console.log('Form Data:', {
-        kode: values.kode,
-        noTelpon: phoneOption === 'Tidak' ? phoneNumber : 'Tergabung Telegram',
-        tahunSetoran: selectedReason,
-        tahunLainnya: customReason,
-        unggah: values.unggah
-      })
-
-      const response = await fetch(
-        'https://layananbank-production.up.railway.app/api/nota/create',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-          body: formData
+      await axios.post('http://localhost:3001/api/nota/create', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
         }
-      )
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Gagal mengirim data')
-      }
+      })
 
       Swal.fire({
         title: 'Pengajuan Dokumen Berhasil!',
         icon: 'success',
         draggable: true
       })
-      console.log(result)
+      setValues({ unggah: null })
+      setPhoneNumber('')
+      setSelectedReason('')
+      setPhoneOption('')
+      setCustomReason('')
+      e.target.reset()
     } catch (err) {
       setErrorMessage(`Terjadi kesalahan: ${err.message}`)
       Swal.fire({
         title: 'Gagal Mengirim Dokumen!',
+        text: err.response?.data?.message || err.message,
         icon: 'warning',
         draggable: true
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
     <div>
       <NavbarComponent />
-      {/* Header */}
       <header className='header-dokumen'>
         <Container fluid>
           <Row className='dokumenheader-box d-flex align-items-center justify-content-center'>
@@ -138,23 +126,6 @@ const DokumenB = () => {
         <Row className='justify-content-center mt-4'>
           <Col md={8} lg={10}>
             <Form onSubmit={handleSubmit} className='formulir'>
-              {/* Kode Satker */}
-              <Form.Group as={Row} className='mb-3'>
-                <Form.Label column sm={4}>
-                  Kode Satker
-                </Form.Label>
-                <Col sm={8}>
-                  <Form.Control
-                    type='text'
-                    name='kode'
-                    placeholder='Masukkan Kode Satker'
-                    onChange={handleChanges}
-                    value={values.kode}
-                    required
-                  />
-                </Col>
-              </Form.Group>
-
               {/* Telegram */}
               <Form.Group as={Row} className='mb-3'>
                 <Form.Label column sm={4}>
@@ -263,8 +234,8 @@ const DokumenB = () => {
 
               {/* Submit */}
               <div className='text-end'>
-                <Button type='submit' variant='primary'>
-                  Kirim
+                <Button type='submit' variant='primary' disabled={isLoading}>
+                  {isLoading ? 'Loading...' : 'Kirim'}
                 </Button>
               </div>
             </Form>

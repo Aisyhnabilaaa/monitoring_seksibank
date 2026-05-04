@@ -189,17 +189,18 @@ const HomePage = () => {
                   className='layanan-btn'
                   onClick={() =>
                     navigate(
-                      '/layanan/Penerbitan Surat Persetujuan / Penolakan Pembukaan Rekening Satker'
+                      '/layanan/Permohonan Persetujuan Pembukaan Rekening Satker'
                     )
                   }
                 >
-                  Penerbitan surat persetujuan / penolakan pembukaan rekening
-                  satker
+                  Permohonan Persetujuan Pembukaan Rekening Satker
                 </button>
                 <button
                   className='layanan-btn'
                   onClick={() =>
-                    navigate('/layanan/Laporan Pembukaan / Penutupan Rekening')
+                    navigate(
+                      '/layanan/Laporan Pembukaan atau Penutupan Rekening'
+                    )
                   }
                 >
                   Laporan Pembukaan / Penutupan Rekening

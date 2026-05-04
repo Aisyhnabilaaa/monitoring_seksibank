@@ -1,28 +1,34 @@
 import { useEffect, useState } from 'react'
-import { Container, Table, Spinner, Form } from 'react-bootstrap'
-import axios from 'axios'
+import { Container, Table, Spinner, Form, Badge } from 'react-bootstrap'
+import api from '../../../api'
 import Swal from 'sweetalert2'
 
 const MonitoringAdminH = () => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+
+  const ASSETS_URL = 'http://localhost:3001/uploads'
   const fetchData = () => {
     const token = localStorage.getItem('token')
-    axios
-      .get(
-        'https://layananbank-production.up.railway.app/api/monitoringPenerbitanBukti/',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+    setLoading(true)
+    api
+      .get('/monitoringPenerbitanBukti/', {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
+      })
       .then(response => {
         setData(response.data)
       })
       .catch(error => {
-        console.error('Gagal mengambil data:', error)
+        if (error.response?.status === 403) {
+          Swal.fire(
+            'Akses Ditolak',
+            'Token expired atau Anda bukan Admin',
+            'error'
+          )
+        }
       })
       .finally(() => {
         setLoading(false)
@@ -36,8 +42,8 @@ const MonitoringAdminH = () => {
   const handleStatusChange = async (id, newStatus) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.patch(
-        `https://layananbank-production.up.railway.app/api/monitoringPenerbitanBukti/${id}`,
+      await api.patch(
+        `/monitoringPenerbitanBukti/${id}`,
         { status: newStatus },
         {
           headers: {
@@ -50,16 +56,23 @@ const MonitoringAdminH = () => {
           item.id === id ? { ...item, status: newStatus } : item
         )
       )
+      Swal.fire({
+        icon: 'success',
+        title: 'Status Berhasil Diperbarui',
+        timer: 1500,
+        showConfirmButton: false
+      })
     } catch (error) {
       console.error('Gagal update status:', error)
+      Swal.fire('Error', 'Gagal memperbarui status', 'error')
     }
   }
 
   const handleCatatanChange = async (id, newCatatan) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.patch(
-        `https://layananbank-production.up.railway.app/api/monitoringPenerbitanBukti/${id}`,
+      await api.patch(
+        `/monitoringPenerbitanBukti/${id}`,
         { catatan: newCatatan },
         {
           headers: {
@@ -93,14 +106,11 @@ const MonitoringAdminH = () => {
 
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(
-        `https://layananbank-production.up.railway.app/api/monitoringPenerbitanBukti/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      await api.delete(`/monitoringPenerbitanBukti/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
+      })
 
       // Hapus data dari state
       setData(prevData => prevData.filter(item => item.id !== id))
@@ -114,11 +124,14 @@ const MonitoringAdminH = () => {
       alert(error.response?.data?.message || 'Gagal menghapus data')
     }
   }
-  const filteredData = data.filter(item =>
-    item.penerbitanBukti?.kodeSatker
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  )
+  const filteredData = data.filter(item => {
+    const kode = item.penerbitanBukti?.satker?.kodeSatker || ''
+    const instansi = item.penerbitanBukti?.satker?.namaInstansi || ''
+    return (
+      kode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      instansi.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  })
   return (
     <Container className='mt-5 p-5'>
       <h2 className='text-center mb-4'>Monitoring Penerbitan Bukti Negara</h2>
@@ -131,7 +144,7 @@ const MonitoringAdminH = () => {
             placeholder='Masukkan kode satker...'
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            style={{ border: '2px solid #000000', borderRadius: '5px' }}
+            style={{ border: '2px solid #ced4da', borderRadius: '5px' }}
           />
         </Form.Group>
       </div>
@@ -140,12 +153,13 @@ const MonitoringAdminH = () => {
           <thead className='table-light'>
             <tr>
               <th>Kode Satker</th>
+              <th>Nama Instansi</th>
+              <th>Nama Lengkap</th>
               <th>Nomor Telepon</th>
-              <th>Alasan Retur</th>
-              <th>Alasan Lainnya</th>
               <th>Dokumen</th>
               <th>Status</th>
               <th>Catatan</th>
+              <th>Daftar Syarat Dokumen Yang Dikirimkan</th>
               <th>Aksi</th>
             </tr>
           </thead>
@@ -156,23 +170,26 @@ const MonitoringAdminH = () => {
                   <Spinner animation='border' variant='primary' />
                 </td>
               </tr>
-            ) : data.length === 0 ? (
+            ) : filteredData.length === 0 ? (
               <tr>
                 <td colSpan='6' className='text-center text-muted'>
                   Tidak ada data tersedia
                 </td>
               </tr>
             ) : (
-              filteredData.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.penerbitanBukti.kodeSatker || '-'}</td>
+              filteredData.map(item => (
+                <tr key={item.id}>
+                  <td className='text-center'>
+                    {item.penerbitanBukti.satker?.kodeSatker || '-'}
+                  </td>
+                  <td>{item.penerbitanBukti.satker?.namaInstansi || '-'}</td>
+                  <td>{item.penerbitanBukti.user?.namaLengkap || '-'}</td>
                   <td>{item.penerbitanBukti.noTelpon || '-'}</td>
-                  <td>{item.penerbitanBukti.alasanRetur || '-'}</td>
-                  <td>{item.penerbitanBukti.alasanLainnya || '-'}</td>
+
                   <td>
                     {item.penerbitanBukti.unggah_dokumen ? (
                       <a
-                        href={item.penerbitanBukti.unggah_dokumen}
+                        href={`${ASSETS_URL}/${item.penerbitanBukti.unggah_dokumen}`}
                         target='_blank'
                         rel='noopener noreferrer'
                       >
@@ -187,6 +204,13 @@ const MonitoringAdminH = () => {
                       value={item.status || 'DIPROSES'}
                       onChange={e =>
                         handleStatusChange(item.id, e.target.value)
+                      }
+                      className={
+                        item.status === 'SELESAI'
+                          ? 'text-success fw-bold'
+                          : item.status === 'DITOLAK'
+                          ? 'text-danger fw-bold'
+                          : 'text-primary'
                       }
                     >
                       <option value='DIPROSES'>Diproses</option>
@@ -203,6 +227,29 @@ const MonitoringAdminH = () => {
                         handleCatatanChange(item.id, e.target.value)
                       }
                     />
+                  </td>
+                  <td>
+                    {item.checklistKmp ? (
+                      <div className='d-flex flex-wrap gap-1'>
+                        {Object.entries(item.checklistKmp).map(
+                          ([key, value]) =>
+                            value === true && (
+                              <Badge
+                                key={key}
+                                bg='success'
+                                style={{
+                                  fontSize: '10px',
+                                  textTransform: 'capitalize'
+                                }}
+                              >
+                                {key.replace(/([A-Z])/g, ' $1').trim()}
+                              </Badge>
+                            )
+                        )}
+                      </div>
+                    ) : (
+                      <span className='text-muted small italic'>-</span>
+                    )}
                   </td>
                   <td>
                     <button

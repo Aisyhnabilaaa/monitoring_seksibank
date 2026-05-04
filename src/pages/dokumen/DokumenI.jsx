@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import Swal from 'sweetalert2'
+import api from '../../api'
 import NavbarComponent from '../../components/NavbarComponent'
 
 const DokumenI = () => {
   const [values, setValues] = useState({
-    kode: '',
-    pihak: '',
     unggah: null
   })
-
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedOption, setSelectedOption] = useState('') // Iya / tidak
   const [phoneNumber, setPhoneNumber] = useState('') // Kalau pilih "tidak"
   const [errorMessage, setErrorMessage] = useState('')
@@ -50,27 +49,21 @@ const DokumenI = () => {
 
     try {
       const token = localStorage.getItem('token')
-      if (!token) throw new Error('Token tidak ditemukan.')
-
-      const response = await fetch(
-        'https://layananbank-production.up.railway.app/api/pengembalianPnbp/create',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-          body: formData
+      await api.post('/pengembalianPnbp/create', {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
-
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.message || 'Gagal mengirim data')
+      })
 
       Swal.fire({
         title: 'Pengajuan Dokumen Berhasil!',
         icon: 'success',
         draggable: true
       })
+      setValues({ unggah: null, contact: '', kode: '' })
+      setPhoneNumber('')
+      setSelectedOption('')
+      e.target.reset()
     } catch (err) {
       setErrorMessage(`Terjadi kesalahan: ${err.message}`)
       console.error(err)
@@ -79,6 +72,8 @@ const DokumenI = () => {
         icon: 'warning',
         draggable: true
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -123,23 +118,6 @@ const DokumenI = () => {
                   </Form.Select>
                 </Col>
               </Form.Group>
-
-              <Form.Group as={Row} className='mb-3'>
-                <Form.Label column sm={4}>
-                  Kode Satker / Nama Pemda
-                </Form.Label>
-                <Col sm={8}>
-                  <Form.Control
-                    type='text'
-                    name='kode'
-                    placeholder='Masukkan Kode Satker / Nama Pemda'
-                    onChange={handleChanges}
-                    required
-                    value={values.kode}
-                  />
-                </Col>
-              </Form.Group>
-
               {/* Telegram */}
               <Form.Group as={Row} className='mb-3'>
                 <Form.Label column sm={4}>
@@ -193,12 +171,25 @@ const DokumenI = () => {
                   </p>
                 </Col>
               </Form.Group>
-
-              {errorMessage && <p className='text-danger'>{errorMessage}</p>}
-
+              {errorMessage && (
+                <div className='alert alert-danger' role='alert'>
+                  {errorMessage}
+                </div>
+              )}
               <div className='text-end'>
-                <Button type='submit' variant='primary'>
-                  Kirim
+                <Button type='submit' variant='primary' disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <span
+                        className='spinner-border spinner-border-sm me-2'
+                        role='status'
+                        aria-hidden='true'
+                      ></span>
+                      Kirim...
+                    </>
+                  ) : (
+                    'Kirim'
+                  )}
                 </Button>
               </div>
             </Form>

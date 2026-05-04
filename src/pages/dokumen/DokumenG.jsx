@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import Swal from 'sweetalert2'
+import api from '../../api'
 import NavbarComponent from '../../components/NavbarComponent'
 
 const DokumenG = () => {
   const [values, setValues] = useState({
-    kode: '',
-    pihak: '',
     unggah: null
   })
-
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedOption, setSelectedOption] = useState('') // Iya / tidak
   const [phoneNumber, setPhoneNumber] = useState('') // Kalau pilih "tidak"
   const [errorMessage, setErrorMessage] = useState('')
@@ -17,7 +16,7 @@ const DokumenG = () => {
   const handleChanges = e => {
     const { name, value, type, files } = e.target
 
-    if (name === 'subject') {
+    if (name === 'telegram') {
       setSelectedOption(value)
     } else {
       setValues(prev => ({
@@ -47,30 +46,33 @@ const DokumenG = () => {
     if (values.unggah) {
       formData.append('unggahDokumen', values.unggah)
     }
+    setIsLoading(true)
+    Swal.fire({
+      title: 'Mohon Tunggu',
+      text: 'Sedang memproses dokumen ',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
 
     try {
       const token = localStorage.getItem('token')
-      if (!token) throw new Error('Token tidak ditemukan.')
-
-      const response = await fetch(
-        'https://layananbank-production.up.railway.app/api/pengembalianPfk/create',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-          body: formData
+      await api.post('/pengembalianPfk/create', {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
-
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.message || 'Gagal mengirim data')
-
+      })
       Swal.fire({
         title: 'Pengajuan Dokumen Berhasil!',
         icon: 'success',
         draggable: true
       })
+      setValues({ unggah: null })
+      setPhoneNumber('')
+      setErrorMessage('')
+      e.target.reset()
     } catch (err) {
       setErrorMessage(`Terjadi kesalahan: ${err.message}`)
       console.error(err)
@@ -79,6 +81,8 @@ const DokumenG = () => {
         icon: 'warning',
         draggable: true
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -121,22 +125,6 @@ const DokumenG = () => {
                     <option value='satuan_kerja'>Satuan Kerja</option>
                     <option value='pemerintah_daerah'>Pemerintah Daerah</option>
                   </Form.Select>
-                </Col>
-              </Form.Group>
-
-              <Form.Group as={Row} className='mb-3'>
-                <Form.Label column sm={4}>
-                  Kode Satker / Nama Pemda
-                </Form.Label>
-                <Col sm={8}>
-                  <Form.Control
-                    type='text'
-                    name='kode'
-                    placeholder='Masukkan Kode Satker / Nama Pemda'
-                    onChange={handleChanges}
-                    required
-                    value={values.kode}
-                  />
                 </Col>
               </Form.Group>
 
@@ -197,8 +185,19 @@ const DokumenG = () => {
               {errorMessage && <p className='text-danger'>{errorMessage}</p>}
 
               <div className='text-end'>
-                <Button type='submit' variant='primary'>
-                  Kirim
+                <Button type='submit' variant='primary' disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <span
+                        className='spinner-border spinner-border-sm me-2'
+                        role='status'
+                        aria-hidden='true'
+                      ></span>
+                      Kirim...
+                    </>
+                  ) : (
+                    'Kirim'
+                  )}
                 </Button>
               </div>
             </Form>

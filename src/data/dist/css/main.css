@@ -1525,3 +1525,119 @@ html, body {
   overflow-y: auto;
   /* Jika kontennya panjang, bisa di-scroll */
 }
+.sidebar-footer {
+  padding: 15px;
+  position: relative;
+}
+
+.sidebar-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 15px;
+}
+
+.sidebar-user-container {
+  position: relative;
+}
+
+.sidebar-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 12px;
+  transition: background 0.3s;
+}
+
+.user-avatar i {
+  font-size: 2rem;
+  color: #ffffff;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.sidebar-username {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  color: #ffffff;
+}
+
+.user-menu-toggle {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  padding: 5px;
+  transition: transform 0.3s ease;
+}
+
+.user-menu-toggle.active {
+  color: #fff;
+}
+
+/* Dropdown Menu Style */
+.user-dropdown-menu {
+  position: absolute;
+  bottom: 110%;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  padding: 8px;
+  z-index: 1000;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.dropdown-item-custom, .logout-btn-custom {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.dropdown-item-custom:hover {
+  background: #f8f9fa;
+  color: #5a32a3;
+}
+
+.logout-btn-custom {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.logout-btn-custom:hover {
+  background: #fff5f5;
+  color: #a71d2a;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: #eee;
+  margin: 5px 0;
+}
+
+/* Animasi Fade In */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate__fadeInUp {
+  animation: fadeInUp 0.3s ease-out;
+}

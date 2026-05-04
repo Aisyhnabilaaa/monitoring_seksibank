@@ -1,29 +1,37 @@
 import { useEffect, useState } from 'react'
-import { Container, Table, Spinner, Form } from 'react-bootstrap'
-import axios from 'axios'
+import { Container, Table, Spinner, Form, Badge } from 'react-bootstrap'
+import api from '../../../api'
 import Swal from 'sweetalert2'
 
 const MonitoringAdminE = () => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-
+  const ASSETS_URL = 'http://localhost:3001/uploads'
   const fetchData = () => {
     const token = localStorage.getItem('token')
-    axios
-      .get(
-        'https://layananbank-production.up.railway.app/api/monitoringPembukaanRekening/',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+    setLoading(true)
+    api
+      .get('/monitoringPembukaanRekening/', {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
+      })
       .then(response => {
-        setData(response.data)
+        console.log('Data diterima:', response.data)
+        const result = Array.isArray(response.data)
+          ? response.data
+          : [response.data]
+        setData(result)
       })
       .catch(error => {
-        console.error('Gagal mengambil data:', error)
+        if (error.response?.status === 403) {
+          Swal.fire(
+            'Akses Ditolak',
+            'Token expired atau Anda bukan Admin',
+            'error'
+          )
+        }
       })
       .finally(() => {
         setLoading(false)
@@ -37,8 +45,8 @@ const MonitoringAdminE = () => {
   const handleStatusChange = async (id, newStatus) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.patch(
-        `https://layananbank-production.up.railway.app/api/monitoringPembukaanRekening/${id}`,
+      await api.patch(
+        `/monitoringPembukaanRekening/${id}`,
         { status: newStatus },
         {
           headers: {
@@ -51,16 +59,23 @@ const MonitoringAdminE = () => {
           item.id === id ? { ...item, status: newStatus } : item
         )
       )
+      Swal.fire({
+        icon: 'success',
+        title: 'Status Berhasil Diperbarui',
+        timer: 1500,
+        showConfirmButton: false
+      })
     } catch (error) {
       console.error('Gagal update status:', error)
+      Swal.fire('Error', 'Gagal memperbarui status', 'error')
     }
   }
 
   const handleCatatanChange = async (id, newCatatan) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.patch(
-        `https://layananbank-production.up.railway.app/api/monitoringPembukaanRekening/${id}`,
+      await api.patch(
+        `/monitoringPembukaanRekening/${id}`,
         { catatan: newCatatan },
         {
           headers: {
@@ -94,18 +109,12 @@ const MonitoringAdminE = () => {
 
     try {
       const token = localStorage.getItem('token')
-      await axios.delete(
-        `https://layananbank-production.up.railway.app/api/monitoringPembukaanRekening/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      await api.delete(`/monitoringPembukaanRekening/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
-
-      // Hapus data dari state
+      })
       setData(prevData => prevData.filter(item => item.id !== id))
-
       Swal.fire({
         title: 'Monitoring Berhasil Dihapus',
         icon: 'success'
@@ -115,11 +124,14 @@ const MonitoringAdminE = () => {
       alert(error.response?.data?.message || 'Gagal menghapus data')
     }
   }
-  const filteredData = data.filter(item =>
-    item.pembukaanRekening?.kodeSatker
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  )
+  const filteredData = data.filter(item => {
+    const kode = item.pembukaanRekening?.kodeSatker || ''
+    const instansi = item.pembukaanRekening?.satker?.namaInstansi || ''
+    return (
+      kode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      instansi.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  })
 
   return (
     <Container className='mt-5 p-5'>
@@ -133,7 +145,7 @@ const MonitoringAdminE = () => {
             placeholder='Masukkan kode satker...'
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
-            style={{ border: '2px solid #000000', borderRadius: '5px' }}
+            style={{ border: '2px solid #ced4da', borderRadius: '5px' }}
           />
         </Form.Group>
       </div>
@@ -142,11 +154,14 @@ const MonitoringAdminE = () => {
           <thead className='table-light'>
             <tr>
               <th>Kode Satker</th>
+              <th>Nama Instansi</th>
+              <th>Nama Lengkap</th>
               <th>Nomor Telepon</th>
               <th>Jenis Rekening</th>
               <th>Dokumen</th>
-              <th>Status</th>
-              <th>Catatan</th>
+              <th style={{ width: '150px' }}>Status</th>
+              <th style={{ width: '200px' }}>Catatan</th>
+              <th>Daftar Syarat Dokumen Yang Dikirimkan</th>
               <th>Aksi</th>
             </tr>
           </thead>
@@ -157,24 +172,29 @@ const MonitoringAdminE = () => {
                   <Spinner animation='border' variant='primary' />
                 </td>
               </tr>
-            ) : data.length === 0 ? (
+            ) : filteredData.length === 0 ? (
               <tr>
                 <td colSpan='6' className='text-center text-muted'>
                   Tidak ada data tersedia
                 </td>
               </tr>
             ) : (
-              filteredData.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.pembukaanRekening.kodeSatker || '-'}</td>
+              filteredData.map(item => (
+                <tr key={item.id}>
+                  <td className='text-center'>
+                    {item.pembukaanRekening?.satker?.kodeSatker || '-'}
+                  </td>
+                  <td>{item.pembukaanRekening?.satker?.namaInstansi || '-'}</td>
+                  <td>{item.pembukaanRekening?.user?.namaLengkap || '-'}</td>
                   <td>{item.pembukaanRekening.noTelpon || '-'}</td>
                   <td>{item.pembukaanRekening.jenisRekening || '-'}</td>
                   <td>
                     {item.pembukaanRekening.unggahDokumen ? (
                       <a
-                        href={item.pembukaanRekening.unggahDokumen}
+                        href={`${ASSETS_URL}/${item.pembukaanRekening.unggahDokumen}`}
                         target='_blank'
                         rel='noopener noreferrer'
+                        className='btn btn-outline-primary btn-sm'
                       >
                         Lihat Dokumen
                       </a>
@@ -187,6 +207,13 @@ const MonitoringAdminE = () => {
                       value={item.status || 'DIPROSES'}
                       onChange={e =>
                         handleStatusChange(item.id, e.target.value)
+                      }
+                      className={
+                        item.status === 'SELESAI'
+                          ? 'text-success fw-bold'
+                          : item.status === 'DITOLAK'
+                          ? 'text-danger fw-bold'
+                          : 'text-primary'
                       }
                     >
                       <option value='DIPROSES'>Diproses</option>
@@ -203,6 +230,29 @@ const MonitoringAdminE = () => {
                         handleCatatanChange(item.id, e.target.value)
                       }
                     />
+                  </td>
+                  <td>
+                    {item.checklistKmp ? (
+                      <div className='d-flex flex-wrap gap-1'>
+                        {Object.entries(item.checklistKmp).map(
+                          ([key, value]) =>
+                            value === true && (
+                              <Badge
+                                key={key}
+                                bg='success'
+                                style={{
+                                  fontSize: '10px',
+                                  textTransform: 'capitalize'
+                                }}
+                              >
+                                {key.replace(/([A-Z])/g, ' $1').trim()}
+                              </Badge>
+                            )
+                        )}
+                      </div>
+                    ) : (
+                      <span className='text-muted small italic'>-</span>
+                    )}
                   </td>
                   <td>
                     <button

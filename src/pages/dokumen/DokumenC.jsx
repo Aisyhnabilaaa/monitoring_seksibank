@@ -1,16 +1,14 @@
 import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
+import api from '../../api' // Pastikan axios instance sudah benar
 import Swal from 'sweetalert2'
 import NavbarComponent from '../../components/NavbarComponent'
 
 const DokumenC = () => {
   const [values, setValues] = useState({
-    kode: '',
-    contact: '',
-    subject: '',
     unggah: null
   })
-
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedReason, setSelectedReason] = useState('') // Tahun Setoran
   const [customReason, setCustomReason] = useState('') // Tahun Lainnya
   const [phoneOption, setPhoneOption] = useState('') // Iya / Tidak
@@ -35,7 +33,6 @@ const DokumenC = () => {
   const handleSubmit = async e => {
     e.preventDefault()
 
-    // Validasi nomor telepon jika pilihan 'Tidak'
     if (phoneOption === 'Tidak' && !phoneNumber) {
       setErrorMessage(
         'Nomor telepon harus diisi jika Anda memilih "Tidak" untuk Telegram'
@@ -46,75 +43,73 @@ const DokumenC = () => {
     }
 
     const formData = new FormData()
-    formData.append('kodeSatker', values.kode)
+    // Data No Telpon
     formData.append(
       'noTelpon',
       phoneOption === 'Tidak' ? phoneNumber : 'Tergabung Telegram'
     )
     formData.append(
       'tahunSetoran',
-      selectedReason === 'lainnya' ? 'LAINNYA' : selectedReason
+      selectedReason === 'lainnya' ? customReason : selectedReason
     )
-    if (selectedReason === 'lainnya') {
-      formData.append('tahunLainnya', customReason)
-    }
     if (values.unggah) {
       formData.append('unggahDokumen', values.unggah)
     }
 
+    setIsLoading(true)
+    Swal.fire({
+      title: 'Mohon Tunggu',
+      text: 'Sedang memproses dokumen ',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
+
     try {
-      // Cek token
       const token = localStorage.getItem('token')
-      if (!token) {
-        throw new Error('Token tidak ditemukan. Silakan login kembali.')
-      }
 
-      // Menampilkan log untuk debugging
-      console.log('Form Data:', {
-        kode: values.kode,
-        noTelpon: phoneOption === 'Tidak' ? phoneNumber : 'Tergabung Telegram',
-        tahunSetoran: selectedReason,
-        tahunLainnya: customReason,
-        unggah: values.unggah
-      })
-
-      const response = await fetch(
-        'https://layananbank-production.up.railway.app/api/koreksiPenerimaan/create',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`
-          },
-          body: formData
+      // PERBAIKAN UTAMA: api.post(url, data, config)
+      await api.post('/koreksiPenerimaan/create', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
         }
-      )
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Gagal mengirim data')
-      }
+      })
 
       Swal.fire({
         title: 'Pengajuan Dokumen Berhasil!',
         icon: 'success',
         draggable: true
       })
-      console.log(result)
+
+      // Reset Form
+      setValues({ unggah: null })
+      setPhoneNumber('')
+      setSelectedReason('')
+      setPhoneOption('')
+      setCustomReason('')
+      setErrorMessage('')
+      e.target.reset() // Reset input file secara fisik
     } catch (err) {
-      setErrorMessage(`Terjadi kesalahan: ${err.message}`)
+      console.error(err)
+      const msg = err.response?.data?.message || err.message
+      setErrorMessage(`Terjadi kesalahan: ${msg}`)
       Swal.fire({
         title: 'Gagal Mengirim Dokumen!',
+        text: msg,
         icon: 'warning',
         draggable: true
       })
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
     <div>
       <NavbarComponent />
-      {/* Header */}
       <header className='header-dokumen'>
         <Container fluid>
           <Row className='dokumenheader-box d-flex align-items-center justify-content-center'>
@@ -138,23 +133,6 @@ const DokumenC = () => {
         <Row className='justify-content-center mt-4'>
           <Col md={8} lg={10}>
             <Form onSubmit={handleSubmit} className='formulir'>
-              {/* Kode Satker */}
-              <Form.Group as={Row} className='mb-3'>
-                <Form.Label column sm={4}>
-                  Kode Satker
-                </Form.Label>
-                <Col sm={8}>
-                  <Form.Control
-                    type='text'
-                    name='kode'
-                    placeholder='Masukkan Kode Satker'
-                    onChange={handleChanges}
-                    value={values.kode}
-                    required
-                  />
-                </Col>
-              </Form.Group>
-
               {/* Telegram */}
               <Form.Group as={Row} className='mb-3'>
                 <Form.Label column sm={4}>
@@ -225,7 +203,7 @@ const DokumenC = () => {
                   {selectedReason === 'lainnya' && (
                     <Form.Control
                       type='text'
-                      placeholder='Masukkan Tahun Lainnya'
+                      placeholder='Masukkan Tahun Lainnya (Contoh: 2023)'
                       value={customReason}
                       onChange={e => setCustomReason(e.target.value)}
                       className='mt-2'
@@ -263,8 +241,19 @@ const DokumenC = () => {
 
               {/* Submit */}
               <div className='text-end'>
-                <Button type='submit' variant='primary'>
-                  Kirim
+                <Button type='submit' variant='primary' disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <span
+                        className='spinner-border spinner-border-sm me-2'
+                        role='status'
+                        aria-hidden='true'
+                      ></span>
+                      Kirim...
+                    </>
+                  ) : (
+                    'Kirim'
+                  )}
                 </Button>
               </div>
             </Form>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Container, Table, Spinner, Form, Button } from 'react-bootstrap'
-import axios from 'axios'
+import { Container, Table, Spinner, Form, Button, Badge } from 'react-bootstrap'
+import api from '../../api'
 import NavbarComponent from '../../components/NavbarComponent'
 import Swal from 'sweetalert2'
 
@@ -10,13 +10,17 @@ const MonitoringI = () => {
   const [fileInputs, setFileInputs] = useState({})
   const [searchTerm, setSearchTerm] = useState('')
   const fetchData = () => {
-    axios
-      .get('https://layananbank-production.up.railway.app/api/monitoringPnbp/')
+    setLoading(true)
+    api
+      .get('/monitoringPnbp/')
       .then(response => {
         setData(response.data)
       })
       .catch(error => {
         console.error('Gagal mengambil data:', error)
+        if (error.response?.status === 401) {
+          Swal.fire('Error', 'Sesi login tidak valid', 'error')
+        }
       })
       .finally(() => {
         setLoading(false)
@@ -42,33 +46,32 @@ const MonitoringI = () => {
     formData.append('unggahDokumen', file)
 
     try {
-      await axios.patch(
-        `https://layananbank-production.up.railway.app/api/pengembalianPnbp/${id}`,
+      await api.patch(
+        `http://localhost:3000/api/pengembalianPnbp/${id}`,
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+            'Content-Type': 'multipart/form-data'
           }
         }
       )
+      Swal.fire('Berhasil', 'Dokumen diupdate!', 'success')
+      setFileInputs(prev => ({ ...prev, [id]: null }))
       fetchData()
-      Swal.fire({
-        title: 'Pengajuan Dokumen Berhasil Diubah!',
-        icon: 'success',
-        draggable: true
-      })
     } catch (error) {
       console.error('Gagal Upload ulang dokumen:', error)
-      alert('upload gagal')
+      Swal.fire('Gagal', 'Terjadi kesalahan server', 'error')
     }
   }
 
-  const filteredData = data.filter(item =>
-    item.pengembalianPnbp?.kodeSatker
-      ?.toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  )
+  const filteredData = data.filter(item => {
+    const kode = item.pengembalianPnbp?.satker?.kodeSatker || ''
+    const instansi = item.pengembalianPnbp?.satker?.namaInstansi || ''
+    return (
+      kode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      instansi.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  })
 
   return (
     <div>
@@ -104,26 +107,26 @@ const MonitoringI = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan='5' className='text-center'>
+                  <td colSpan='7' className='text-center'>
                     <Spinner animation='border' variant='primary' />
                   </td>
                 </tr>
-              ) : data.length === 0 ? (
+              ) : filteredData.length === 0 ? (
                 <tr>
-                  <td colSpan='5' className='text-center text-muted'>
+                  <td colSpan='7' className='text-center text-muted'>
                     Tidak ada data tersedia
                   </td>
                 </tr>
               ) : (
-                filteredData.map((item, index) => (
-                  <tr key={item.pengembalianPnbp?.id || index}>
+                filteredData.map(item => (
+                  <tr key={item.id}>
                     <td>{item.pengembalianPnbp.pihakMengajukan || '-'}</td>
                     <td>{item.pengembalianPnbp.kodeSatker || '-'}</td>
                     <td>{item.pengembalianPnbp.noTelpon || '-'}</td>
                     <td>
                       {item.pengembalianPnbp.unggahDokumen ? (
                         <a
-                          href={item.pengembalianPnbp.unggahDokumen}
+                          href={`http://localhost:3001/uploads/${item.pengembalianPnbp.unggahDokumen}`}
                           target='_blank'
                           rel='noopener noreferrer'
                         >
@@ -134,7 +137,17 @@ const MonitoringI = () => {
                       )}
                     </td>
                     <td>
-                      <span>{item.status || 'DIPROSES'}</span>
+                      <Badge
+                        bg={
+                          item.status === 'Selesai'
+                            ? 'success'
+                            : item.status === 'Ditolak'
+                            ? 'danger'
+                            : 'warning'
+                        }
+                      >
+                        {item.status || 'PROSES'}
+                      </Badge>
                     </td>
 
                     <td>{item.catatan || '-'}</td>
@@ -150,12 +163,12 @@ const MonitoringI = () => {
                             }
                           />
                           <Button
-                            className='mt-2'
                             size='sm'
-                            variant='primary'
+                            className='mt-1 w-100'
                             onClick={() => handleUpload(item.id)}
+                            disabled={!fileInputs[item.id]}
                           >
-                            Upload Ulang
+                            Kirim Ulang
                           </Button>
                         </div>
                       )}

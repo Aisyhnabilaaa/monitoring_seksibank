@@ -1,31 +1,48 @@
 import { useEffect, useState } from 'react'
-import { Container, Table, Spinner, Form } from 'react-bootstrap'
-import axios from 'axios'
+import {
+  Container,
+  Table,
+  Spinner,
+  Form,
+  Button,
+  Badge,
+  Card
+} from 'react-bootstrap'
 import Swal from 'sweetalert2'
+import api from '../../../api'
 
 const MonitoringAdminA = () => {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
 
+  const ASSETS_URL = 'http://localhost:3001/uploads'
+
   const fetchData = () => {
     const token = localStorage.getItem('token')
-    axios
-    axios
-      .get(
-        'https://layananbank-production.up.railway.app/api/monitoringRetur/',
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+    setLoading(true)
+    api
+      .get('/monitoringRetur/', {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      )
+      })
       .then(response => {
         console.log('Data diterima:', response.data)
-        setData(response.data)
+        const result = Array.isArray(response.data)
+          ? response.data
+          : response.data.data || [response.data]
+        setData(result)
       })
       .catch(error => {
         console.error('Gagal mengambil data:', error)
+        if (error.response?.status === 403) {
+          Swal.fire(
+            'Akses Ditolak',
+            'Token expired atau Anda bukan Admin',
+            'error'
+          )
+        }
       })
       .finally(() => {
         setLoading(false)
@@ -39,24 +56,50 @@ const MonitoringAdminA = () => {
   const handleStatusChange = async (id, newStatus) => {
     try {
       const token = localStorage.getItem('token')
-      await axios.patch(
-        `https://layananbank-production.up.railway.app/api/monitoringRetur/${id}`,
+      await api.patch(
+        `/monitoringRetur/${id}`,
+        { status: newStatus },
         {
-          status: newStatus
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+          headers: { Authorization: `Bearer ${token}` }
         }
       )
+
       setData(prevData =>
         prevData.map(item =>
           item.id === id ? { ...item, status: newStatus } : item
         )
       )
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Status Berhasil Diperbarui',
+        timer: 1500,
+        showConfirmButton: false
+      })
     } catch (error) {
       console.error('Gagal update status:', error)
+      Swal.fire('Error', 'Gagal memperbarui status', 'error')
+    }
+  }
+
+  const handleCatatanChange = async (id, newCatatan) => {
+    try {
+      const token = localStorage.getItem('token')
+      await api.patch(
+        `/monitoringRetur/${id}`,
+        { catatan: newCatatan },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      )
+
+      setData(prevData =>
+        prevData.map(item =>
+          item.id === id ? { ...item, catatan: newCatatan } : item
+        )
+      )
+    } catch (error) {
+      console.error('Gagal update catatan:', error)
     }
   }
 
@@ -71,160 +114,176 @@ const MonitoringAdminA = () => {
       confirmButtonText: 'Ya, hapus!',
       cancelButtonText: 'Batal'
     })
-    if (result.confirmDelete) return
 
-    try {
-      const token = localStorage.getItem('token')
-      await axios.delete(
-        `https://layananbank-production.up.railway.app/api/monitoringRetur/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      )
-      setData(prevData => prevData.filter(item => item.id !== id))
-
-      Swal.fire({
-        title: 'Monitoring Berhasil Dihapus',
-        icon: 'success'
-      })
-    } catch (error) {
-      console.error('Gagal menghapus data:', error)
-      alert(error.response?.data?.message || 'Gagal menghapus data')
+    if (result.isConfirmed) {
+      try {
+        const token = localStorage.getItem('token')
+        await api.delete(`/monitoringRetur/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        setData(prevData => prevData.filter(item => item.id !== id))
+        Swal.fire('Terhapus!', 'Data berhasil dihapus.', 'success')
+      } catch (error) {
+        console.error('Gagal menghapus data:', error)
+        Swal.fire('Error', 'Gagal menghapus data', 'error')
+      }
     }
   }
 
-  const handleCatatanChange = async (id, newCatatan) => {
-    try {
-      const token = localStorage.getItem('token')
-      await axios.patch(
-        `https://layananbank-production.up.railway.app/api/monitoringRetur/${id}`,
-        {
-          catatan: newCatatan
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      )
-      setData(prevData =>
-        prevData.map(item =>
-          item.id === id ? { ...item, catatan: newCatatan } : item
-        )
-      )
-    } catch (error) {
-      console.error('Gagal update catatan:', error)
-    }
-  }
-
-  const filteredData = data.filter(item =>
-    item.returSp2d?.kodeSatker?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredData = data.filter(item => {
+    const kode = item.returSp2d?.satker?.kodeSatker || ''
+    const instansi = item.returSp2d?.satker?.namaInstansi || ''
+    return (
+      kode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      instansi.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  })
 
   return (
     <Container className='p-5'>
-      <h2 className='text-center mb-4'>Monitoring Penyelesaian Retur SP2D</h2>
-      <div className='cariKode'>
-        {/* Input search */}
-        <Form.Group className='mb-3'>
-          <Form.Label>Cari Kode Satker</Form.Label>
-          <Form.Control
-            type='text'
-            placeholder='Masukkan kode satker...'
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            style={{ border: '2px solid #000000', borderRadius: '5px' }}
-          />
-        </Form.Group>
-      </div>
-      <div className='table-responsive'>
-        <Table bordered hover>
+      <h2 className='text-center mb-4 fw-bold'>
+        Monitoring Penyelesaian Retur SP2D
+      </h2>
+
+      <Form.Group className='mb-4'>
+        <Form.Label className='fw-bold'>Cari Satker / Instansi</Form.Label>
+        <Form.Control
+          type='text'
+          placeholder='Masukkan kode satker atau nama instansi...'
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          style={{ border: '2px solid #ced4da', borderRadius: '8px' }}
+        />
+      </Form.Group>
+
+      <Card className='table-responsive rounded-2'>
+        <Table bordered hover striped vertical-align='middle'>
           <thead className='table-light'>
-            <tr>
+            <tr className='text-center'>
               <th>Kode Satker</th>
-              <th>Nomor Telepon</th>
+              <th>Nama Instansi</th>
+              <th>Nama Lengkap</th>
               <th>Alasan Retur</th>
-              <th>Alasan Lainnya</th>
+              <th>Daftar Syarat Dokumen Yang Dikirimkan</th>
               <th>Dokumen</th>
-              <th>Status</th>
-              <th>Catatan</th>
-              <th>Aksi</th> {/* Tambah kolom aksi */}
+              <th style={{ width: '150px' }}>Status</th>
+              <th style={{ width: '200px' }}>Catatan Admin</th>
+              <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan='7' className='text-center'>
+                <td colSpan='8' className='text-center p-5'>
                   <Spinner animation='border' variant='primary' />
+                  <p className='mt-2'>Memuat data...</p>
                 </td>
               </tr>
-            ) : data.length === 0 ? (
+            ) : filteredData.length === 0 ? (
               <tr>
-                <td colSpan='7' className='text-center text-muted'>
-                  Tidak ada data tersedia
+                <td colSpan='8' className='text-center text-muted p-4'>
+                  Tidak ada data yang tersedia.
                 </td>
               </tr>
             ) : (
-              filteredData.map((item, index) => {
-                console.log('URL Dokumen:', item.returSp2d.unggah_dokumen)
-                return (
-                  <tr key={index}>
-                    <td>{item.returSp2d.kodeSatker || '-'}</td>
-                    <td>{item.returSp2d.noTelpon || '-'}</td>
-                    <td>{item.returSp2d.alasanRetur || '-'}</td>
-                    <td>{item.returSp2d.alasanLainnya || '-'}</td>
-                    <td>
-                      {item.returSp2d.unggah_dokumen ? (
-                        <a
-                          href={item.returSp2d.unggah_dokumen}
-                          target='_blank'
-                          rel='noopener noreferrer'
-                        >
-                          Lihat Dokumen
-                        </a>
-                      ) : (
-                        '-'
-                      )}
-                    </td>
-                    <td>
-                      <Form.Select
-                        value={item.status || 'DIPROSES'}
-                        onChange={e =>
-                          handleStatusChange(item.id, e.target.value)
-                        }
+              filteredData.map(item => (
+                <tr key={item.id}>
+                  <td className='text-center font-monospace'>
+                    {item.returSp2d?.satker?.kodeSatker || '-'}
+                  </td>
+                  <td>{item.returSp2d?.satker?.namaInstansi || '-'}</td>
+                  <td>{item.returSp2d?.user?.namaLengkap || '-'}</td>
+                  <td className='small'>
+                    {item.returSp2d?.alasanRetur === 'LAINNYA'
+                      ? item.returSp2d?.alasanLainnya
+                      : item.returSp2d?.alasanRetur?.replace(/_/g, ' ') || '-'}
+                  </td>
+                  <td>
+                    {item.checklistKmp ? (
+                      <div className='d-flex flex-wrap gap-1'>
+                        {Object.entries(item.checklistKmp).map(
+                          ([key, value]) =>
+                            value === true && (
+                              <Badge
+                                key={key}
+                                bg='success'
+                                style={{
+                                  fontSize: '10px',
+                                  textTransform: 'capitalize'
+                                }}
+                              >
+                                {key.replace(/([A-Z])/g, ' $1').trim()}
+                              </Badge>
+                            )
+                        )}
+                      </div>
+                    ) : (
+                      <span className='text-muted small italic'>-</span>
+                    )}
+                  </td>
+
+                  <td className='text-center'>
+                    {item.returSp2d?.unggah_dokumen ? (
+                      <a
+                        href={`${ASSETS_URL}/${item.returSp2d.unggah_dokumen}`}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='btn btn-outline-primary btn-sm'
                       >
-                        <option value='DIPROSES'>Diproses</option>
-                        <option value='SELESAI'>Selesai</option>
-                        <option value='DITOLAK'>Ditolak</option>
-                      </Form.Select>
-                    </td>
-                    <td>
-                      <Form.Control
-                        as='textarea'
-                        rows={3}
-                        value={item.catatan || ''}
-                        onChange={e =>
-                          handleCatatanChange(item.id, e.target.value)
-                        }
-                      />
-                    </td>
-                    <td>
-                      <button
-                        className='btn btn-danger btn-sm'
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        Hapus
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })
+                        Lihat Dokumen
+                      </a>
+                    ) : (
+                      '-'
+                    )}
+                  </td>
+                  <td>
+                    <Form.Select
+                      size='sm'
+                      value={item.status || 'DIPROSES'}
+                      onChange={e =>
+                        handleStatusChange(item.id, e.target.value)
+                      }
+                      className={
+                        item.status === 'SELESAI'
+                          ? 'text-success fw-bold'
+                          : item.status === 'DITOLAK'
+                          ? 'text-danger fw-bold'
+                          : 'text-primary'
+                      }
+                    >
+                      <option value='DIPROSES'>DIPROSES</option>
+                      <option value='SELESAI'>SELESAI</option>
+                      <option value='DITOLAK'>DITOLAK</option>
+                    </Form.Select>
+                  </td>
+
+                  <td>
+                    <Form.Control
+                      as='textarea'
+                      rows={2}
+                      size='sm'
+                      placeholder='Catatan...'
+                      value={item.catatan || ''}
+                      onChange={e =>
+                        handleCatatanChange(item.id, e.target.value)
+                      }
+                    />
+                  </td>
+                  <td className='text-center'>
+                    <Button
+                      variant='danger'
+                      size='sm'
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      Hapus
+                    </Button>
+                  </td>
+                </tr>
+              ))
             )}
           </tbody>
         </Table>
-      </div>
+      </Card>
     </Container>
   )
 }

@@ -11,7 +11,7 @@ import LayananPage from './pages/LayananPage'
 import Dokumen from './pages/DokumenPage'
 
 import Login from './components/Login'
-import Register from './components/Register'
+import RegisterPage from './admin/page/user/Register'
 
 import LayananA from './pages/layanan/LayananA'
 import LayananB from './pages/layanan/LayananB'
@@ -53,6 +53,7 @@ import MonitoringAdminG from './admin/page/MonitoringAdmin/MonitoringAdminG'
 import MonitoringAdminH from './admin/page/MonitoringAdmin/MonitoringAdminH'
 import MonitoringAdminI from './admin/page/MonitoringAdmin/MonitoringAdminI'
 import NotifikasiPage from './admin/page/NotifikasiAdmin'
+import SatkerPage from './admin/page/Satker/satker'
 
 function App () {
   return (
@@ -80,11 +81,11 @@ function App () {
         />
         <Route path='layanan/Permohonan VOID SP2D' element={<LayananD />} />
         <Route
-          path='layanan/Penerbitan Surat Persetujuan / Penolakan Pembukaan Rekening Satker'
+          path='layanan/Permohonan Persetujuan Pembukaan Rekening Satker'
           element={<LayananE />}
         />
         <Route
-          path='layanan/Laporan Pembukaan / Penutupan Rekening'
+          path='layanan/Penerbitan Surat Persetujuan Penolakan Pembukaan Rekening Satker'
           element={<LayananF />}
         />
         <Route path='layanan/Pengembalian PFK' element={<LayananG />} />
@@ -108,11 +109,11 @@ function App () {
         />
         <Route path='dokumen/Permohonan VOID SP2D' element={<DokumenD />} />
         <Route
-          path='dokumen/Penerbitan Surat Persetujuan / Penolakan Pembukaan Rekening Satker'
+          path='dokumen/Permohonan Persetujuan Pembukaan Rekening Satker'
           element={<DokumenE />}
         />
         <Route
-          path='dokumen/Laporan Pembukaan / Penutupan Rekening'
+          path='dokumen/Laporan Pembukaan atau Penutupan Rekening'
           element={<DokumenF />}
         />
         <Route path='dokumen/Pengembalian PFK' element={<DokumenG />} />
@@ -140,11 +141,11 @@ function App () {
           element={<MonitoringD />}
         />
         <Route
-          path='monitoring/Penerbitan Surat Persetujuan / Penolakan Pembukaan Rekening Satker'
+          path='monitoring/Permohonan Persetujuan Pembukaan Rekening Satker'
           element={<MonitoringE />}
         />
         <Route
-          path='monitoring/Laporan Pembukaan / Penutupan Rekening'
+          path='monitoring/Laporan Pembukaan atau Penutupan Rekening'
           element={<MonitoringF />}
         />
         <Route path='monitoring/Pengembalian PFK' element={<MonitoringG />} />
@@ -156,7 +157,6 @@ function App () {
 
         {/* Login & Register */}
         <Route path='login' element={<Login />} />
-        <Route path='register' element={<Register />} />
       </Route>
 
       {/* Routes untuk Admin */}
@@ -177,11 +177,11 @@ function App () {
         />
         <Route path='monitoring/Void SP2D' element={<MonitoringAdminD />} />
         <Route
-          path='monitoring/Pengajuan Persetujuan Pembukaan Rekening'
+          path='monitoring/Permohonan Persetujuan Pembukaan Rekening Satker'
           element={<MonitoringAdminE />}
         />
         <Route
-          path='monitoring/Permohonan Persetujuan Pembukaan Rekening Satker'
+          path='monitoring/Laporan Pembukaan atau Penutupan Rekening'
           element={<MonitoringAdminF />}
         />
         <Route
@@ -196,6 +196,8 @@ function App () {
           path='monitoring/Pengembalian PNBP'
           element={<MonitoringAdminI />}
         />
+        <Route path='satker/formSatker' element={<SatkerPage />} />
+        <Route path='Register/RegisterForm' element={<RegisterPage />} />
       </Route>
     </Routes>
   )

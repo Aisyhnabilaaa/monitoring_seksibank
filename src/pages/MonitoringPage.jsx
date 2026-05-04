@@ -73,22 +73,21 @@ const MonitoringPage = () => {
                   className='layanan-btn'
                   onClick={() =>
                     navigate(
-                      '/monitoring/Penerbitan Surat Persetujuan / Penolakan Pembukaan Rekening Satker'
+                      '/monitoring/Permohonan Persetujuan Pembukaan Rekening Satker'
                     )
                   }
                 >
-                  Penerbitan surat persetujuan / penolakan pembukaan rekening
-                  satker
+                  Permohonan Persetujuan Pembukaan Rekening Satker satker
                 </button>
                 <button
                   className='layanan-btn'
                   onClick={() =>
                     navigate(
-                      '/monitoring/Laporan Pembukaan / Penutupan Rekening'
+                      '/monitoring/Laporan Pembukaan atau Penutupan Rekening'
                     )
                   }
                 >
-                  Laporan Pembukaan / Penutupan Rekening
+                  Laporan Pembukaan atau Penutupan Rekening
                 </button>
                 <button
                   className='layanan-btn'
