@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import Swal from 'sweetalert2'
 import NavbarComponent from '../../components/NavbarComponent'
+import { API_URL } from '../../config'
 
 const DokumenB = () => {
   const [values, setValues] = useState({
@@ -69,17 +70,8 @@ const DokumenB = () => {
         throw new Error('Token tidak ditemukan. Silakan login kembali.')
       }
 
-      // Menampilkan log untuk debugging
-      console.log('Form Data:', {
-        kode: values.kode,
-        noTelpon: phoneOption === 'Tidak' ? phoneNumber : 'Tergabung Telegram',
-        tahunSetoran: selectedReason,
-        tahunLainnya: customReason,
-        unggah: values.unggah
-      })
-
       const response = await fetch(
-        'https://layananbank-production.up.railway.app/api/nota/create',
+        `${API_URL}/nota/create`,
         {
           method: 'POST',
           headers: {
@@ -100,7 +92,6 @@ const DokumenB = () => {
         icon: 'success',
         draggable: true
       })
-      console.log(result)
     } catch (err) {
       setErrorMessage(`Terjadi kesalahan: ${err.message}`)
       Swal.fire({

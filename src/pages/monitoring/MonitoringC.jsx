@@ -3,6 +3,7 @@ import { Container, Table, Spinner, Form, Button } from 'react-bootstrap'
 import axios from 'axios'
 import NavbarComponent from '../../components/NavbarComponent'
 import Swal from 'sweetalert2'
+import { API_URL } from '../../config'
 
 const MonitoringC = () => {
   const [data, setData] = useState([])
@@ -12,10 +13,9 @@ const MonitoringC = () => {
   const fetchData = () => {
     axios
       .get(
-        'https://layananbank-production.up.railway.app/api/monitoringKoreksi/'
+        `${API_URL}/monitoringKoreksi/`
       )
       .then(response => {
-        console.log(response.data) // Tambahkan log ini
         setData(response.data)
       })
       .catch(error => {
@@ -46,7 +46,7 @@ const MonitoringC = () => {
 
     try {
       await axios.patch(
-        `https://layananbank-production.up.railway.app/api/koreksiPenerimaan/${id}`,
+        `${API_URL}/koreksiPenerimaan/${id}`,
         formData,
         {
           headers: {

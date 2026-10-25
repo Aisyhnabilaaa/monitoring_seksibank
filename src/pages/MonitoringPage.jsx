@@ -1,16 +1,14 @@
-import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Container, Row, Col } from 'react-bootstrap'
 import NavbarComponent from '../components/NavbarComponent'
 
 const MonitoringPage = () => {
-  const daftarLayananRef = useRef(null)
   const navigate = useNavigate()
 
   return (
     <div>
       <NavbarComponent />\{/* Section Daftar Layanan */}
-      <div ref={daftarLayananRef} className='mt-5 w-100 py-5'>
+      <div className='mt-5 w-100 py-5'>
         <Container>
           <Row className='text-center'>
             <Col>

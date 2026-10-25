@@ -3,6 +3,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import { API_URL } from '../config'
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -19,7 +20,7 @@ const Login = () => {
     e.preventDefault()
     try {
       const res = await axios.post(
-        'https://layananbank-production.up.railway.app/api/auth/login',
+        `${API_URL}/auth/login`,
         form
       )
       const token = res.data.data.token
@@ -42,10 +43,8 @@ const Login = () => {
 
       setTimeout(() => {
         if (role === 'admin') {
-          console.log('Navigating to /admin')
           navigate('/admin') // ⬅️ masuk ke route admin layout
         } else {
-          console.log('Navigating to user layout')
           navigate('/') // ⬅️ masuk ke user layout
         }
       }, 2000)

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import Swal from 'sweetalert2'
 import NavbarComponent from '../../components/NavbarComponent'
+import { API_URL } from '../../config'
 
 const DokumenF = () => {
   const [values, setValues] = useState({
@@ -54,7 +55,7 @@ const DokumenF = () => {
       if (!token) throw new Error('Token tidak ditemukan.')
 
       const response = await fetch(
-        'https://layananbank-production.up.railway.app/api/laporanRekening/create',
+        `${API_URL}/laporanRekening/create`,
         {
           method: 'POST',
           headers: {

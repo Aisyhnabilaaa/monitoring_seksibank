@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { FaUser } from 'react-icons/fa'
 import axios from 'axios'
+import { API_URL } from '../config'
 
 const NavbarComponent = () => {
   const navigate = useNavigate()
@@ -11,14 +12,12 @@ const NavbarComponent = () => {
   const [username, setUsername] = useState({})
 
   const token = localStorage.getItem('token')
-  console.log(token)
   const id = localStorage.getItem('id')
-  console.log(id)
 
   const getUser = async id => {
     try {
       const response = await axios.get(
-        `https://layananbank-production.up.railway.app/api/user/${id}`,
+        `${API_URL}/user/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -28,9 +27,8 @@ const NavbarComponent = () => {
       const result = response.data
       setUsername(result)
       setIsLoggedIn(true)
-      console.log('isi navbar', result)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 

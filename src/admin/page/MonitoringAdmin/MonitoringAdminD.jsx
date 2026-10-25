@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Container, Table, Spinner, Form } from 'react-bootstrap'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { API_URL } from '../../../config'
 
 const MonitoringAdminD = () => {
   const [data, setData] = useState([])
@@ -11,7 +12,7 @@ const MonitoringAdminD = () => {
     const token = localStorage.getItem('token')
     axios
       .get(
-        'https://layananbank-production.up.railway.app/api/monitoringVoid/',
+        `${API_URL}/monitoringVoid/`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -37,7 +38,7 @@ const MonitoringAdminD = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `https://layananbank-production.up.railway.app/api/monitoringVoid/${id}`,
+        `${API_URL}/monitoringVoid/${id}`,
         { status: newStatus },
         {
           headers: {
@@ -59,7 +60,7 @@ const MonitoringAdminD = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `https://layananbank-production.up.railway.app/api/monitoringVoid/${id}`,
+        `${API_URL}/monitoringVoid/${id}`,
         { catatan: newCatatan },
         {
           headers: {
@@ -94,7 +95,7 @@ const MonitoringAdminD = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.delete(
-        `https://layananbank-production.up.railway.app/api/monitoringVoid/${id}`,
+        `${API_URL}/monitoringVoid/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { API_URL } from '../../config'
 
 const NotifikasiPage = () => {
   const [notifications, setNotifications] = useState([])
@@ -11,9 +12,8 @@ const NotifikasiPage = () => {
     const fetchNotifications = async () => {
       try {
         const res = await axios.get(
-          `https://layananbank-production.up.railway.app/api/notifikasi/${userId}`
+          `${API_URL}/notifikasi/${userId}`
         )
-        console.log('Data notifikasi:', res.data) // debugz`
         setNotifications(res.data)
 
         // hitung notif yang belum dibaca untuk notifCount
@@ -33,7 +33,7 @@ const NotifikasiPage = () => {
     try {
       // request PATCH ke backend untuk ubah status notif
       await axios.patch(
-        `https://layananbank-production.up.railway.app/api/notifikasi/read/${id}`
+        `${API_URL}/notifikasi/read/${id}`
       )
 
       // update state lokal biar status notif langsung berubah
@@ -64,7 +64,7 @@ const NotifikasiPage = () => {
     if (result.isConfirmed) {
       try {
         await axios.delete(
-          'https://layananbank-production.up.railway.app/api/notifikasi/deleteall'
+          `${API_URL}/notifikasi/deleteall`
         )
         setNotifications([]) // Clear notifications
         setNotifCount(0) // Reset count

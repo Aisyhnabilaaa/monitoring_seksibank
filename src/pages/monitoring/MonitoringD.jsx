@@ -3,6 +3,7 @@ import { Container, Table, Spinner, Form, Button } from 'react-bootstrap'
 import axios from 'axios'
 import NavbarComponent from '../../components/NavbarComponent'
 import Swal from 'sweetalert2'
+import { API_URL } from '../../config'
 
 const MonitoringD = () => {
   const [data, setData] = useState([])
@@ -11,7 +12,7 @@ const MonitoringD = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const fetchData = () => {
     axios
-      .get('https://layananbank-production.up.railway.app/api/monitoringVoid/')
+      .get(`${API_URL}/monitoringVoid/`)
       .then(response => {
         setData(response.data)
       })
@@ -43,7 +44,7 @@ const MonitoringD = () => {
 
     try {
       await axios.patch(
-        `https://layananbank-production.up.railway.app/api/pengajuanVoid/${id}`,
+        `${API_URL}/pengajuanVoid/${id}`,
         formData,
         {
           headers: {
