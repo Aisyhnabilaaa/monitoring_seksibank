@@ -1,9 +1,7 @@
-import { useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Container, Row, Col } from 'react-bootstrap'
 
 const MonitoringPage = () => {
-  const daftarLayananRef = useRef(null)
   const navigate = useNavigate()
 
   const layananList = [
@@ -42,7 +40,7 @@ const MonitoringPage = () => {
 
   return (
     <div>
-      <Container ref={daftarLayananRef} className='py-5'>
+      <Container className='py-5'>
         <Row className='text-center mb-5'>
           <Col>
             <h1 className='fw-bold'>

@@ -12,7 +12,6 @@ const MonitoringAdminA = () => {
   const fetchData = () => {
     const token = localStorage.getItem('token')
     axios
-    axios
       .get(
         `${API_URL}/monitoringRetur/`,
         {

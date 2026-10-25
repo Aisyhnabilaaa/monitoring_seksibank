@@ -1,5 +1,4 @@
 import { Routes, Route } from 'react-router-dom'
-import 'sweetalert2/dist/sweetalert2.min.css'
 
 import UserLayout from './layouts/UserLayout'
 import AdminLayout from './admin/AdminLayout'
