@@ -21,7 +21,6 @@ const MonitoringAdminA = () => {
         }
       )
       .then(response => {
-        console.log('Data diterima:', response.data)
         setData(response.data)
       })
       .catch(error => {
@@ -168,7 +167,6 @@ const MonitoringAdminA = () => {
               </tr>
             ) : (
               filteredData.map((item, index) => {
-                console.log('URL Dokumen:', item.returSp2d.unggah_dokumen)
                 return (
                   <tr key={index}>
                     <td>{item.returSp2d.kodeSatker || '-'}</td>

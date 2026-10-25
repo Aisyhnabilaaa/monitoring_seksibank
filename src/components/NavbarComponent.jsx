@@ -11,9 +11,7 @@ const NavbarComponent = () => {
   const [username, setUsername] = useState({})
 
   const token = localStorage.getItem('token')
-  console.log(token)
   const id = localStorage.getItem('id')
-  console.log(id)
 
   const getUser = async id => {
     try {
@@ -28,9 +26,8 @@ const NavbarComponent = () => {
       const result = response.data
       setUsername(result)
       setIsLoggedIn(true)
-      console.log('isi navbar', result)
     } catch (error) {
-      console.log(error)
+      console.error(error)
     }
   }
 

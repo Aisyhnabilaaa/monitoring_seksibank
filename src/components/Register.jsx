@@ -24,7 +24,6 @@ const Register = () => {
         'https://layananbank-production.up.railway.app/api/auth/register',
         form
       )
-      console.log('Register success:', response.data)
 
       if (response.status >= 200 && response.status < 300) {
         MySwal.fire({

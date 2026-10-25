@@ -66,7 +66,7 @@ const DokumenA = () => {
     try {
       const token = localStorage.getItem('token') // Pastikan token disimpan saat login
 
-      const response = await axios.post(
+      await axios.post(
         'https://layananbank-production.up.railway.app/api/retur/create',
         formData,
         {
@@ -87,7 +87,6 @@ const DokumenA = () => {
       setPhoneNumber('')
       setSelectedReason('')
       setCustomReason('')
-      console.log(response.data)
     } catch (error) {
       console.error('Gagal mengirim:', error.response?.data || error.message)
       Swal.fire({

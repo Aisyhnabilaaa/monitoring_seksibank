@@ -16,7 +16,6 @@ const Sidebar = () => {
       try {
         const token = localStorage.getItem('admin_token')
         const id = localStorage.getItem('id')
-        console.log('User ID:', id)
 
         const response = await axios.get(
           `https://layananbank-production.up.railway.app/api/user/${id}`,

@@ -13,7 +13,6 @@ const NotifikasiUserPage = () => {
         const res = await axios.get(
           `https://layananbank-production.up.railway.app/api/notifikasi/${userId}`
         )
-        console.log('Data notifikasi:', res.data) // debugz`
         setNotifications(res.data)
 
         // hitung notif yang belum dibaca untuk notifCount

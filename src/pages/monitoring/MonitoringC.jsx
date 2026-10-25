@@ -15,7 +15,6 @@ const MonitoringC = () => {
         'https://layananbank-production.up.railway.app/api/monitoringKoreksi/'
       )
       .then(response => {
-        console.log(response.data) // Tambahkan log ini
         setData(response.data)
       })
       .catch(error => {

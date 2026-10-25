@@ -42,10 +42,8 @@ const Login = () => {
 
       setTimeout(() => {
         if (role === 'admin') {
-          console.log('Navigating to /admin')
           navigate('/admin') // ⬅️ masuk ke route admin layout
         } else {
-          console.log('Navigating to user layout')
           navigate('/') // ⬅️ masuk ke user layout
         }
       }, 2000)
