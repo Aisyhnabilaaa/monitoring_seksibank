@@ -3,6 +3,7 @@ import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import NavbarComponent from '../../components/NavbarComponent'
+import { API_URL } from '../../config'
 
 const DokumenA = () => {
   const [values, setValues] = useState({
@@ -67,7 +68,7 @@ const DokumenA = () => {
       const token = localStorage.getItem('token') // Pastikan token disimpan saat login
 
       await axios.post(
-        'https://layananbank-production.up.railway.app/api/retur/create',
+        `${API_URL}/retur/create`,
         formData,
         {
           headers: {

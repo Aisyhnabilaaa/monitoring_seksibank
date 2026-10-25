@@ -2,6 +2,7 @@ import { useState } from 'react'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { API_URL } from '../config'
 
 const MySwal = withReactContent(Swal)
 
@@ -21,7 +22,7 @@ const Register = () => {
     e.preventDefault()
     try {
       const response = await axios.post(
-        'https://layananbank-production.up.railway.app/api/auth/register',
+        `${API_URL}/auth/register`,
         form
       )
 

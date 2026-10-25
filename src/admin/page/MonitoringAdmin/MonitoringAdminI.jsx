@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Container, Table, Spinner, Form } from 'react-bootstrap'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { API_URL } from '../../../config'
 
 const MonitoringAdminI = () => {
   const [data, setData] = useState([])
@@ -11,7 +12,7 @@ const MonitoringAdminI = () => {
     const token = localStorage.getItem('token')
     axios
       .get(
-        'https://layananbank-production.up.railway.app/api/monitoringPnbp/',
+        `${API_URL}/monitoringPnbp/`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -37,7 +38,7 @@ const MonitoringAdminI = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `https://layananbank-production.up.railway.app/api/monitoringPnbp/${id}`,
+        `${API_URL}/monitoringPnbp/${id}`,
         { status: newStatus },
         {
           headers: {
@@ -94,7 +95,7 @@ const MonitoringAdminI = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.delete(
-        `https://layananbank-production.up.railway.app/api/monitoringKoreksi/${id}`,
+        `${API_URL}/monitoringKoreksi/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

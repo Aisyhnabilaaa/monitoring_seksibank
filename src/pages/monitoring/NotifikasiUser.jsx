@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { API_URL } from '../../config'
 
 const NotifikasiUserPage = () => {
   const [notifications, setNotifications] = useState([])
@@ -11,7 +12,7 @@ const NotifikasiUserPage = () => {
     const fetchNotifications = async () => {
       try {
         const res = await axios.get(
-          `https://layananbank-production.up.railway.app/api/notifikasi/${userId}`
+          `${API_URL}/notifikasi/${userId}`
         )
         setNotifications(res.data)
 

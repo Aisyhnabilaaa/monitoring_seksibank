@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Container, Table, Spinner, Form } from 'react-bootstrap'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import { API_URL } from '../../../config'
 
 const MonitoringAdminE = () => {
   const [data, setData] = useState([])
@@ -12,7 +13,7 @@ const MonitoringAdminE = () => {
     const token = localStorage.getItem('token')
     axios
       .get(
-        'https://layananbank-production.up.railway.app/api/monitoringPembukaanRekening/',
+        `${API_URL}/monitoringPembukaanRekening/`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -38,7 +39,7 @@ const MonitoringAdminE = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `https://layananbank-production.up.railway.app/api/monitoringPembukaanRekening/${id}`,
+        `${API_URL}/monitoringPembukaanRekening/${id}`,
         { status: newStatus },
         {
           headers: {
@@ -60,7 +61,7 @@ const MonitoringAdminE = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.patch(
-        `https://layananbank-production.up.railway.app/api/monitoringPembukaanRekening/${id}`,
+        `${API_URL}/monitoringPembukaanRekening/${id}`,
         { catatan: newCatatan },
         {
           headers: {
@@ -95,7 +96,7 @@ const MonitoringAdminE = () => {
     try {
       const token = localStorage.getItem('token')
       await axios.delete(
-        `https://layananbank-production.up.railway.app/api/monitoringPembukaanRekening/${id}`,
+        `${API_URL}/monitoringPembukaanRekening/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

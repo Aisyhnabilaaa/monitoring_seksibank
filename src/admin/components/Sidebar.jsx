@@ -2,6 +2,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { API_URL } from '../../config'
 
 const Sidebar = () => {
   const [isMonitoringOpen, setMonitoringOpen] = useState(false)
@@ -18,7 +19,7 @@ const Sidebar = () => {
         const id = localStorage.getItem('id')
 
         const response = await axios.get(
-          `https://layananbank-production.up.railway.app/api/user/${id}`,
+          `${API_URL}/user/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -40,7 +41,7 @@ const Sidebar = () => {
       try {
         const id = localStorage.getItem('id')
         const response = await axios.get(
-          `https://layananbank-production.up.railway.app/api/notifikasi/${id}`
+          `${API_URL}/notifikasi/${id}`
         )
         const unreadNotif = response.data.filter(n => n.status === 'unread')
         setNotifCount(unreadNotif.length)

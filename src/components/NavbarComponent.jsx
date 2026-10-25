@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { FaUser } from 'react-icons/fa'
 import axios from 'axios'
+import { API_URL } from '../config'
 
 const NavbarComponent = () => {
   const navigate = useNavigate()
@@ -16,7 +17,7 @@ const NavbarComponent = () => {
   const getUser = async id => {
     try {
       const response = await axios.get(
-        `https://layananbank-production.up.railway.app/api/user/${id}`,
+        `${API_URL}/user/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`

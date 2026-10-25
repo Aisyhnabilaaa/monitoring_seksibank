@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Container, Row, Col, Form, Button } from 'react-bootstrap'
 import Swal from 'sweetalert2'
 import NavbarComponent from '../../components/NavbarComponent'
+import { API_URL } from '../../config'
 
 const DokumenB = () => {
   const [values, setValues] = useState({
@@ -70,7 +71,7 @@ const DokumenB = () => {
       }
 
       const response = await fetch(
-        'https://layananbank-production.up.railway.app/api/nota/create',
+        `${API_URL}/nota/create`,
         {
           method: 'POST',
           headers: {

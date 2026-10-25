@@ -3,6 +3,7 @@ import { Container, Table, Spinner, Button, Form } from 'react-bootstrap'
 import axios from 'axios'
 import NavbarComponent from '../../components/NavbarComponent'
 import Swal from 'sweetalert2'
+import { API_URL } from '../../config'
 
 const MonitoringF = () => {
   const [data, setData] = useState([])
@@ -12,7 +13,7 @@ const MonitoringF = () => {
   const fetchData = () => {
     axios
       .get(
-        'https://layananbank-production.up.railway.app/api/monitoringLaporan/'
+        `${API_URL}/monitoringLaporan/`
       )
       .then(response => {
         setData(response.data)

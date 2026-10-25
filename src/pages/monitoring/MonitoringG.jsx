@@ -3,6 +3,7 @@ import { Container, Table, Spinner, Form, Button } from 'react-bootstrap'
 import axios from 'axios'
 import NavbarComponent from '../../components/NavbarComponent'
 import Swal from 'sweetalert2'
+import { API_URL } from '../../config'
 
 const MonitoringG = () => {
   const [data, setData] = useState([])
@@ -43,7 +44,7 @@ const MonitoringG = () => {
 
     try {
       await axios.patch(
-        `https://layananbank-production.up.railway.app/api/pengembalianPfk/${id}`,
+        `${API_URL}/pengembalianPfk/${id}`,
         formData,
         {
           headers: {
